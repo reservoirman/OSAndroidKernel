@@ -10,22 +10,29 @@ int sys_fail_ran = 0;
  
 asmlinkage long sys_fail(int N)
 {
-	n= N;	
-	if(n > 0)
+	n=N;	
+	if(n > 0 && sys_fail_ran == 0)
 	{	
 		current_thread_info()->task->hw2_count = 0;
 		sys_fail_ran = 1;
 		return 0;
 	}
-	else if( n<=0)
+	else if( n<=0 && sys_fail_ran == 0)
 	{
 		return(-EINVAL);
 	}
+
 	else if( n == 0 && sys_fail_ran == 1)
 	{
 		sys_fail_ran = 0;
 		return 0;
 	}
+	else if( n > 0 && sys_fail_ran == 1 )
+	{
+		current_thread_info()->task->hw2_count = 0;
+		return 0;
+	}
+
 	else
 	{
 		return 0;
