@@ -24,7 +24,7 @@ void insertNode(struct sthread_sem_struct *sem, int data) {
                sem->head->next = NULL;
                sem->sthread_count++;
 
-                printf("data:%d node:%p next:%p\n", sem->head->data, sem->head, sem->head->next);
+                printf("data:%d node:%p next:%p cnt:%d\n", sem->head->data, sem->head, sem->head->next, sem->sthread_count);
            } 
            else 
 	   {
@@ -34,7 +34,7 @@ void insertNode(struct sthread_sem_struct *sem, int data) {
                 temp->next = NULL;
                 sem->head = temp;
                 sem->sthread_count++;
-                printf("2.data:%d node:%p next:%p\n", sem->head->data, sem->head, sem->head->next);
+                printf("2.data:%d node:%p next:%p cnt:%d\n", sem->head->data, sem->head, sem->head->next, sem->sthread_count);
            }
 }
 
@@ -43,7 +43,7 @@ void removeNode(struct sthread_sem_struct *sem) {
     temp = sem->start;
     sem->start = sem->start->next;
     free(temp);
-                printf("3.data:%d node:%p next:%p\n", sem->head->data, sem->head, sem->head->next);
+                printf("3.data:%d node:%p next:%p cnt:%d\n", sem->head->data, sem->head, sem->head->next, sem->sthread_count);
    
     // wake up node
     // potentially free it
