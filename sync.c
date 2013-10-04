@@ -125,12 +125,37 @@ int sthread_sem_down(sthread_sem_t *sem)
 int sthread_sem_try_down(sthread_sem_t *sem)
 {
 	/* FILL ME IN! */
+	/*
+		if (sem->count > 0)
+			return 0
+		else
+			return -1
+	*/
         return -1;
 }
+
 
 int sthread_sem_up(sthread_sem_t *sem)
 {
 	/* FILL ME IN! */
+
+	/*
+	if( waiting queue is empty )
+	{
+	   increment sem->count
+	   return 0;
+	}
+	else
+	{	while ( sthread_sem_try_down() != 0)
+		{
+			available = 0; 
+		}
+		semaphore is available
+		so wake up one thread from the queue 
+		remove the thread from the queue.
+
+		return 0 or -1;   // not sure about the return value.
+	}*/
         return -1;
 }
 
