@@ -7,12 +7,15 @@
 #include "sync.h"
 #include <stdlib.h>
 
+ 	sthread_sem_t test;
+
 int
 threadmain(void *arg)
 {
 	int threadno = (int)arg;
 	for (;;) 
   	{
+		sthread_sem_down(&test);
     		printf("thread %d: I'm going to sleep\n", threadno);
   		sthread_suspend();
     		printf("thread %d: I woke up!\n", threadno);
@@ -27,8 +30,10 @@ int deposit(void *arg)
 	int i = 0;
 	//while (1)
 	{
+		sthread_sem_down(&test);
 		for (i = 0; i < 1000000000; i++)
 		balance++;
+		sthread_sem_up(&test);
 	}
 	return 0;
 }
@@ -38,8 +43,10 @@ int withdraw(void *arg)
 	int i = 0;
 	//while (1)
 	{
+		sthread_sem_down(&test);
 		for (i = 0; i < 1000000000; i++)
 		balance--;
+		sthread_sem_up(&test);
 	}
 	return 0;
 }
@@ -47,12 +54,13 @@ int withdraw(void *arg)
 
 int main(int argc, char *argv[])
 {
+
 	sthread_t thr1, thr2, thr3, thr4, thr5;
 
      // Test sthread_sem_init and sthread_sem_destroy 
- 	sthread_sem_t test;
+
 	test.sthread_count = 0;
-	printf("test retrun val:%d\n", sthread_sem_init(&test, 3)); 
+	printf("test retrun val:%d\n", sthread_sem_init(&test, 1)); 
  	printf("test init:%d\n", test.count);
      //	printf("test return destroy:%d\n", sthread_sem_destroy(&test));
  	printf("test init:%d\n", test.count);
@@ -66,13 +74,21 @@ int main(int argc, char *argv[])
 	if (sthread_create(&thr1, withdraw, (void *)1) == -1)
     		fprintf(stderr, "%s: sthread_create: withdraw %s\n", argv[0], strerror(errno));
 
+	int i = 0;
+	 while (i < 8)
+	 {
+		printf("Balance = %d\n", balance);
+		sleep(1);
+		i++;
+	 }
 
 
+	/*
   	 printf("down ret:%d\n", sthread_sem_down(&test));
  	 printf("down ret:%d\n", sthread_sem_down(&test));
  	 printf("down ret:%d\n", sthread_sem_down(&test));
  	 printf("down ret:%d\n", sthread_sem_down(&test));
- 	 printf("down ret:%d\n", sthread_sem_down(&test));
+ 	 printf("down ret:%d\n", sthread_sem_down(&test)); 
 
 
 	 sthread_wake(thr1);
@@ -83,7 +99,7 @@ int main(int argc, char *argv[])
 	 {
 		printf("All done.  Balance = %d\n", balance);
 		sleep(1);
-	 }
+	 }*/
 /*
  if (sthread_create(&thr1, threadmain, (void *)1) == -1)
     fprintf(stderr, "%s: sthread_create: %s\n", argv[0], strerror(errno));
@@ -122,6 +138,7 @@ sleep(1);
 sthread_wake(thr5);
 sleep(1);
 */
+	//queueTest();
 
 	return 0;
 }

@@ -30,5 +30,5 @@ int sthread_sem_destroy(sthread_sem_t *sem);
 int sthread_sem_down(sthread_sem_t *sem);
 int sthread_sem_try_down(sthread_sem_t *sem);
 int sthread_sem_up(sthread_sem_t *sem);
-
+void queueTest();
 #endif
