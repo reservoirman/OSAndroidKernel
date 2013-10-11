@@ -22,16 +22,17 @@ void insertNode(struct sthread_sem_struct *sem, sthread_t data) {
     
           if (sem->sthread_count == 0) {
 	       sem->head = (struct Node*) malloc((size_t)sizeof(struct Node));
+printf("MALLOC:%p\n", sem->head);
 	       sem->start = sem->head ;
                sem->head->data = data;
                sem->head->next = NULL;
                sem->sthread_count++;
-
                 
            } 
            else 
 	   {
 		struct Node *temp = (struct Node *) malloc((size_t)sizeof(struct Node));
+printf("MALLOC:%p\n", temp);
                 sem->head->next = temp;
 		temp->data = data;
                 temp->next = NULL;
@@ -39,7 +40,7 @@ void insertNode(struct sthread_sem_struct *sem, sthread_t data) {
                 sem->sthread_count++;
                 
            }
-printf("InsertNode: data:%p node:%p next:%p cnt:%d\n", sem->head->data, sem->head, sem->head->next, sem->sthread_count);
+	   printf("InsertNode: data:%p node:%p next:%p cnt:%d\n", sem->head->data, sem->head, sem->head->next, sem->sthread_count);
 }
 
 struct Node * removeNode(struct sthread_sem_struct *sem) {
@@ -125,25 +126,37 @@ int sthread_sem_destroy(sthread_sem_t *sem)
 
 int sthread_sem_down(sthread_sem_t *sem)
 {
-	printf("semcnt:%d\n", sem->count);
+	
 	/* FILL ME IN! */
 	lock();
+	traverse(sem);
+	printf("semcnt:%d\n", sem->count);
 	int ret;
-	sem->count--;
-        if (sem->count >= 0)
+	//sem->count--;
+        if (sem->count > 0)
 	{
-	printf("DOWN (available)! \n");
-            //sem->count--;
+	    printf("DOWN (available)! \n");
+            sem->count--;
 	    ret = 0;
+<<<<<<< HEAD
+	    unlock();
+=======
 		unlock();
+>>>>>>> b28a764c9c098092c1528471065ccdac15352c72
 	}	
 	else
 	{
-	printf("DOWN (unavailable)! \n");
+	  printf("DOWN (unavailable)! \n");
           insertNode(sem, sthread_self());
+<<<<<<< HEAD
+	  ret = -1;
+	  unlock();
+	  sthread_suspend();  // causes segfault
+=======
 	unlock();  
 	sthread_suspend();  // causes segfault
 	   ret = -1;
+>>>>>>> b28a764c9c098092c1528471065ccdac15352c72
         } 
 	
 	return ret;
@@ -155,15 +168,15 @@ int sthread_sem_try_down(sthread_sem_t *sem)
 	/* FILL ME IN! */
 	lock();
 	int ret;
-		if (sem->count > 0)
-		{
-			sem->count--;
-			ret = 0;
-		}
-		else
-		{
-			ret = -1;
-		}
+	if (sem->count > 0)
+	{
+		sem->count--;
+		ret = 0;
+	}
+	else
+	{
+		ret = -1;
+	}
 	unlock();
         return ret;
 }
@@ -172,19 +185,43 @@ int sthread_sem_try_down(sthread_sem_t *sem)
 int sthread_sem_up(sthread_sem_t *sem)
 {
 	/* FILL ME IN! */
+<<<<<<< HEAD
+	
+=======
 	lock();	
 	printf("UP!\n");
+>>>>>>> b28a764c9c098092c1528471065ccdac15352c72
 	
-	sem->count++;
+	 
+	
+	lock();
+	traverse(sem);
+	printf("UP! ( semaphore released by calling thread )\n");
 	
 	//if there are threads waiting
-	if (sem->count <= 0 && sem->sthread_count > 0)
+	if (sem->sthread_count <= 0)
 	{
-		//wake up the thread that's been waiting the longest:
+		sem->count++;
+		unlock();
+	}
+	else	
+	{
 		struct Node *longestWaitingThread = removeNode(sem);
-		sthread_wake(longestWaitingThread->data);
+		//sthread_t temp = longestWaitingThread->data;
+		//free(longestWaitingThread);
+		//printf("FREE:%p\n", longestWaitingThread);
+		//printf("temp:%p\n",temp);
 		
+		sthread_wake(longestWaitingThread->data);
+		unlock();
 		//that thread's been removed from the queue; now just free it
+<<<<<<< HEAD
+	
+	}
+	
+	return 0;
+}       
+=======
 		free(longestWaitingThread);
 	}	
 	unlock();
@@ -210,6 +247,7 @@ int sthread_sem_up(sthread_sem_t *sem)
                 return 0 or -1;   // not sure about the return value.
         }*/
 }
+>>>>>>> b28a764c9c098092c1528471065ccdac15352c72
 
 //this is a quick mini test that demonstrates the working-ness of the linked list
 void queueTest()
@@ -235,6 +273,7 @@ void queueTest()
 	{
 		toBeRemoved = removeNode(&holla);
 		free(toBeRemoved);
+
 	}
 
 	traverse(&holla);

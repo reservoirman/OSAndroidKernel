@@ -9,7 +9,7 @@
 
  	sthread_sem_t test;
 
-int
+/*int
 threadmain(void *arg)
 {
 	int threadno = (int)arg;
@@ -21,7 +21,7 @@ threadmain(void *arg)
     		printf("thread %d: I woke up!\n", threadno);
   	}
   	return 0;
-}
+}*/
 
 int balance = 0;
 
@@ -50,6 +50,32 @@ int withdraw(void *arg)
 	}
 	return 0;
 }
+int deposit1(void *arg)
+{
+	int i = 0;
+	//while (1)
+	{
+		sthread_sem_down(&test);
+		for (i = 0; i < 1000000000; i++)
+		balance++;
+		sthread_sem_up(&test);
+	}
+	return 0;
+}
+
+int withdraw1(void *arg)
+{ 
+	int i = 0;
+	//while (1)
+	{
+		sthread_sem_down(&test);
+		for (i = 0; i < 1000000000; i++)
+		balance--;
+		sthread_sem_up(&test);
+		
+	}
+	return 0;
+}
 
 
 int main(int argc, char *argv[])
@@ -60,23 +86,29 @@ int main(int argc, char *argv[])
      // Test sthread_sem_init and sthread_sem_destroy 
 
 	test.sthread_count = 0;
-	printf("test retrun val:%d\n", sthread_sem_init(&test, 1)); 
+	printf("test retrun val:%d\n", sthread_sem_init(&test, 2)); 
  	printf("test init:%d\n", test.count);
      //	printf("test return destroy:%d\n", sthread_sem_destroy(&test));
- 	printf("test init:%d\n", test.count);
+ 
 
  	if (sthread_init() == -1)
    		fprintf(stderr, "%s: sthread_init: %s\n", argv[0], strerror(errno));
 
-	if (sthread_create(&thr2, deposit, (void *)2) == -1)
-   		fprintf(stderr, "%s: sthread_create: deposit %s\n", argv[0], strerror(errno));
-
 	if (sthread_create(&thr1, withdraw, (void *)1) == -1)
     		fprintf(stderr, "%s: sthread_create: withdraw %s\n", argv[0], strerror(errno));
+	if (sthread_create(&thr2, withdraw1, (void *)2) == -1)
+    		fprintf(stderr, "%s: sthread_create: withdraw %s\n", argv[0], strerror(errno));	
+	if (sthread_create(&thr3, deposit, (void *)3) == -1)
+   		fprintf(stderr, "%s: sthread_create: deposit %s\n", argv[0], strerror(errno));
+	if (sthread_create(&thr4, deposit1, (void *)4) == -1)
+   		fprintf(stderr, "%s: sthread_create: deposit %s\n", argv[0], strerror(errno));
 
-	int i = 0;
-	 while (i < 8)
+	
+
+	 int i = 0;
+	 while (i < 30)
 	 {
+		
 		printf("Balance = %d\n", balance);
 		sleep(1);
 		i++;
