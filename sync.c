@@ -138,25 +138,15 @@ int sthread_sem_down(sthread_sem_t *sem)
 	    printf("DOWN (available)! \n");
             sem->count--;
 	    ret = 0;
-<<<<<<< HEAD
-	    unlock();
-=======
 		unlock();
->>>>>>> b28a764c9c098092c1528471065ccdac15352c72
 	}	
 	else
 	{
 	  printf("DOWN (unavailable)! \n");
           insertNode(sem, sthread_self());
-<<<<<<< HEAD
-	  ret = -1;
-	  unlock();
-	  sthread_suspend();  // causes segfault
-=======
 	unlock();  
 	sthread_suspend();  // causes segfault
 	   ret = -1;
->>>>>>> b28a764c9c098092c1528471065ccdac15352c72
         } 
 	
 	return ret;
@@ -185,15 +175,6 @@ int sthread_sem_try_down(sthread_sem_t *sem)
 int sthread_sem_up(sthread_sem_t *sem)
 {
 	/* FILL ME IN! */
-<<<<<<< HEAD
-	
-=======
-	lock();	
-	printf("UP!\n");
->>>>>>> b28a764c9c098092c1528471065ccdac15352c72
-	
-	 
-	
 	lock();
 	traverse(sem);
 	printf("UP! ( semaphore released by calling thread )\n");
@@ -215,13 +196,6 @@ int sthread_sem_up(sthread_sem_t *sem)
 		sthread_wake(longestWaitingThread->data);
 		unlock();
 		//that thread's been removed from the queue; now just free it
-<<<<<<< HEAD
-	
-	}
-	
-	return 0;
-}       
-=======
 		free(longestWaitingThread);
 	}	
 	unlock();
@@ -247,7 +221,6 @@ int sthread_sem_up(sthread_sem_t *sem)
                 return 0 or -1;   // not sure about the return value.
         }*/
 }
->>>>>>> b28a764c9c098092c1528471065ccdac15352c72
 
 //this is a quick mini test that demonstrates the working-ness of the linked list
 void queueTest()
