@@ -135,15 +135,17 @@ int sthread_sem_down(sthread_sem_t *sem)
 	printf("DOWN (available)! \n");
             //sem->count--;
 	    ret = 0;
+		unlock();
 	}	
 	else
 	{
 	printf("DOWN (unavailable)! \n");
           insertNode(sem, sthread_self());
-	  sthread_suspend();  // causes segfault
+	unlock();  
+	sthread_suspend();  // causes segfault
 	   ret = -1;
         } 
-	unlock();
+	
 	return ret;
        
 }
@@ -170,7 +172,7 @@ int sthread_sem_try_down(sthread_sem_t *sem)
 int sthread_sem_up(sthread_sem_t *sem)
 {
 	/* FILL ME IN! */
-	
+	lock();	
 	printf("UP!\n");
 	
 	sem->count++;
@@ -185,7 +187,7 @@ int sthread_sem_up(sthread_sem_t *sem)
 		//that thread's been removed from the queue; now just free it
 		free(longestWaitingThread);
 	}	
-	
+	unlock();
         return 0;
 
         /* FILL ME IN! */
