@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
      // Test sthread_sem_init and sthread_sem_destroy 
 
 	test.sthread_count = 0;
-	printf("test retrun val:%d\n", sthread_sem_init(&test, )); 
+	printf("test retrun val:%d\n", sthread_sem_init(&test,1)); 
  	printf("test init:%d\n", test.count);
      //	printf("test return destroy:%d\n", sthread_sem_destroy(&test));
  

@@ -22,7 +22,6 @@ void insertNode(struct sthread_sem_struct *sem, sthread_t data) {
     
           if (sem->sthread_count == 0) {
 	       sem->head = (struct Node*) malloc((size_t)sizeof(struct Node));
-	       //printf("MALLOC:%p\n", sem->head);
 	       sem->start = sem->head ;
                sem->head->data = data;
                sem->head->next = NULL;
@@ -32,7 +31,6 @@ void insertNode(struct sthread_sem_struct *sem, sthread_t data) {
            else 
 	   {
 		struct Node *temp = (struct Node *) malloc((size_t)sizeof(struct Node));
-		//printf("MALLOC:%p\n", temp);
                 sem->head->next = temp;
 		temp->data = data;
                 temp->next = NULL;
@@ -40,7 +38,6 @@ void insertNode(struct sthread_sem_struct *sem, sthread_t data) {
                 sem->sthread_count++;
                 
            }
-	   printf("InsertNode: data:%p node:%p next:%p cnt:%d\n", sem->head->data, sem->head, sem->head->next, sem->sthread_count);
 }
 
 struct Node * removeNode(struct sthread_sem_struct *sem) 
@@ -49,17 +46,12 @@ struct Node * removeNode(struct sthread_sem_struct *sem)
     temp = sem->start;
     sem->start = sem->start->next;
     sem->sthread_count--;
-    printf("RemoveNode: data:%p node:%p next:%p cnt:%d\n", temp->data, temp, temp->next, sem->sthread_count);
-   
-    // wake up node
-    // potentially free it
-	return temp;
+    return temp;
 }
 
-void traverse(struct sthread_sem_struct *sem) {
-   	 struct Node *current;
+/*void traverse(struct sthread_sem_struct *sem) {
+   	struct Node *current;
     	current = sem->start;
-	printf("Traversing through the queue: \n");
 	if (current == NULL)
 	{
 		printf("Queue is empty!");
@@ -71,7 +63,7 @@ void traverse(struct sthread_sem_struct *sem) {
     	}
 	printf("\n");
 }
-
+*/
 
 void lock()
 {
@@ -85,7 +77,6 @@ void unlock()
 
 int sthread_sem_init(sthread_sem_t *sem, int count)
 {
-	/* FILL ME IN! */
 	lock();
         sem->count = count;
         sem->head = NULL;
@@ -108,7 +99,7 @@ int sthread_sem_init(sthread_sem_t *sem, int count)
 
 int sthread_sem_destroy(sthread_sem_t *sem)
 {
-	/* FILL ME IN! */
+
 	lock();
         sem->count = 0;
         sem->head = NULL;
@@ -129,14 +120,14 @@ int sthread_sem_destroy(sthread_sem_t *sem)
 int sthread_sem_down(sthread_sem_t *sem)
 {
 	
-	/* FILL ME IN! */
+	
 	lock();	
-	printf("semcnt:%d\n", sem->count);
+	
 	int ret;
-	//sem->count--;
+	
         if (sem->count > 0)
 	{
-	    printf("DOWN (available)! \n");
+	 
             sem->count--;
 	    ret = 0;
 	    unlock();
@@ -144,11 +135,11 @@ int sthread_sem_down(sthread_sem_t *sem)
 	}	
 	else
 	{
-	  printf("DOWN (unavailable)! \n");
+	 
           insertNode(sem, sthread_self());
 	  ret = -1;
 	  unlock();
-	  sthread_suspend();  // causes segfault
+	  sthread_suspend();  
         } 
 	
 	return ret;
@@ -157,7 +148,7 @@ int sthread_sem_down(sthread_sem_t *sem)
 
 int sthread_sem_try_down(sthread_sem_t *sem)
 {
-	/* FILL ME IN! */
+	
 	lock();
 	int ret;
 	if (sem->count > 0)
@@ -176,11 +167,10 @@ int sthread_sem_try_down(sthread_sem_t *sem)
 
 int sthread_sem_up(sthread_sem_t *sem)
 {
-	/* FILL ME IN! */
-	lock();
-	printf("UP! ( semaphore released by calling thread )\n");
 	
-	//if there are threads waiting
+	lock();
+	
+	
 	if (sem->sthread_count <= 0)
 	{
 		sem->count++;
@@ -197,7 +187,7 @@ int sthread_sem_up(sthread_sem_t *sem)
 		unlock();
 		sthread_wake(temp.data);
 		
-		//that thread's been removed from the queue; now just free i
+		
 	
 	}
 	
@@ -205,58 +195,4 @@ int sthread_sem_up(sthread_sem_t *sem)
 }       
 
 
-        /* FILL ME IN! */
-
-        /*
-        if( waiting queue is empty )
-        {
-           increment sem->count
-           return 0;
-        }
-        else
-        {       while ( sthread_sem_try_down() != 0)
-                {
-                        available = 0; 
-                }
-                semaphore is available
-                so wake up one thread from the queue 
-                remove the thread from the queue.
-
-                return 0 or -1;   // not sure about the return value.
-        }*/
-
-
-//this is a quick mini test that demonstrates the working-ness of the linked list
-void queueTest()
-{
-	sthread_sem_t holla;
-	
-	sthread_sem_init(&holla, 0);
-		
-	int i = 0;
-	int total = 1;
-	for (i = 0; i < total; i++)
-	{
-		
-		sthread_t thread = sthread_self();
-		insertNode(&holla, thread );
-		
-	}
-	//should display 4 nodes, each one containing the same thread as data
-	traverse(&holla);
-	
-	struct Node *toBeRemoved;
-	for (i = 0; i < (total - 1); i++)
-	{
-		toBeRemoved = removeNode(&holla);
-		free(toBeRemoved);
-
-	}
-
-	traverse(&holla);
-	//remove the last item
-	removeNode(&holla);
-	//should be empty:
-	traverse(&holla);
-}
 
