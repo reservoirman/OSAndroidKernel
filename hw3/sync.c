@@ -178,8 +178,6 @@ int sthread_sem_up(sthread_sem_t *sem)
 	}
 	else	
 	{	
-		if(sem->count == 0)
-			sem->count++;
 		struct Node *longestWaitingThread = removeNode(sem);
 		struct Node temp;
 		temp.data = longestWaitingThread->data;
