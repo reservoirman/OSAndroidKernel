@@ -22,7 +22,7 @@ void insertNode(struct sthread_sem_struct *sem, sthread_t data) {
     
           if (sem->sthread_count == 0) {
 	       sem->head = (struct Node*) malloc((size_t)sizeof(struct Node));
-	       sem->start = sem->head ;
+	       		sem->start = sem->head ;
                sem->head->data = data;
                sem->head->next = NULL;
                sem->sthread_count++;
@@ -32,7 +32,7 @@ void insertNode(struct sthread_sem_struct *sem, sthread_t data) {
 	   {
 		struct Node *temp = (struct Node *) malloc((size_t)sizeof(struct Node));
                 sem->head->next = temp;
-		temp->data = data;
+				temp->data = data;
                 temp->next = NULL;
                 sem->head = temp;
                 sem->sthread_count++;

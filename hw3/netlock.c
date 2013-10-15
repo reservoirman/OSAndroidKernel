@@ -2,147 +2,175 @@
 #include <linux/sched.h>
 #include <asm-generic/errno-base.h>
 #include <linux/syscalls.h>
+#include <linux/wait.h>
+#include <linux/list.h>
 #include <linux/spinlock.h>
+#include <linux/slab.h>
 #include "netlock.h"
 /* Syscall 378. Acquire netlock. type indicates
 whether a regular or exclusive lock is needed. Returns 0 on success 
 and -1 on failure.  */
-spinlock_t mr_lock;
-int read=1, write=1, mutex1=1, mutex2=1, mutex3 = 1, readers = 0, writers = 0;
-
-int wait(int mutex)
-{
-	int ret;
-
-    DEFINE_SPINLOCK(mr_lock);
-	spin_lock(&mr_lock);	
-    if (mutex == 1)
-	{
-	    printk("WAIT (mutex available)! \n");
-       	    mutex = 0;
-	    ret = 0;
-	    spin_unlock(&mr_lock);
-	}	
-	else
-	{
-	  printk("WAIT (mutex unavailable)! \n");
-	  ret = -1;
-	  spin_unlock(&mr_lock);
-    } 
-	return ret;
-}
 
 
-int signal(int mutex)
-{
-    DEFINE_SPINLOCK(mr_lock);
-	spin_lock(&mr_lock);
-	printk("SIGNAL! ( mutex released)\n");
-	
-	if(mutex == 0)
-		mutex = 1;
-	spin_unlock(&mr_lock);
-	return 0;
-}       
-
+spinlock_t lock;
+wait_queue_t wait_queue;
+int read_lock_available=1, write_lock_available=1;
+int reader_count = 0;
+int queue_exists = 0;
+int lock_exists = 0;
 asmlinkage int netlock_acquire(netlock_t type)
 {
-	// Requests regular (read) lock
-	if(type == NET_LOCK_R) {
-		/* if (lock not available) {
-			wait.exclusive = 0;
-			add_wait_queue(&q, &wait);
+	
+	int ret = 0;
+	if (queue_exists == 0)
+	{
+		DEFINE_WAIT(wait_queue);
+		queue_exists = 1;
+
+	spin_lock(&lock);
+	}
+	if (lock_exists == 0)
+	{
+		DEFINE_SPINLOCK(lock);
+		lock_exists = 1;
+
+	spin_lock(&lock);
+	}
+    // Requests regular (read) lock
+    if(type == NET_LOCK_R) 
+    {
+	
+		if (write_lock_available == 1)
+		{
+			reader_count++;
+		}
+		else
+		{
+			wait_queue_head_t *newThread;
+			newThread = (wait_queue_head_t *)kmalloc(sizeof(wait_queue_head_t),GFP_KERNEL);
+			newThread->netlock_flag = 0;	//0 indicates regular lock, 1 indicates exclusive
+			add_wait_queue(newThread,&wait_queue);
 			schedule();
-		}
-		else {} */
-		/* future: if (a process is currently holding or waiting for an exclusive lock)
-		{
-			add this process to the wait queue
-		}
-		else if no process is currently holding or waiting for an exclusive lock)
-		{
-			acquire lock
-		}*/
 
-
-		{
-			wait(mutex3);
-			wait(read);
-			wait(mutex1);
-			readers = readers + 1;
-			if (readers == 1) {
-				wait(write);
-			}
-			signal(mutex1);
-			signal(read);
-			signal(mutex3);
 		}
+		ret = 0;
     }
 
     // Requests exclusive (write) lock
-    else if (type == NET_LOCK_E) {
-		/*	if (lock not available) {
-			wait.exclusive = 1;
-			add_wait_queue(&q, &wait);
+    else if (type == NET_LOCK_E) 
+    {
+    	if (write_lock_available == 1 && read_lock_available == 1)
+    	{
+    		write_lock_available = 0;
+    	}
+    	else
+    	{
+    		wait_queue_head_t *newThread;
+			newThread = (wait_queue_head_t *)kmalloc(sizeof(wait_queue_head_t),GFP_KERNEL);
+			newThread->netlock_flag = 1;	//0 indicates regular lock, 1 indicates exclusive
+			add_wait_queue(newThread,&wait_queue);
 			schedule();
-		}
-		else {} */
-		wait(mutex2);
-		writers = writers + 1;
-		if (writers == 1) {
-			wait(read);
-		}
-		signal(mutex2);
-		wait(write);
+    	}
+		ret = 0;
     }
     // Requests no lock
-    else if (type == NET_LOCK_N) {
-
+    else if (type == NET_LOCK_N) 
+    {
+	
+		ret = -1;
     }
-	return 4321;
+
+    spin_unlock(&lock);
+	return ret;
+	
+	return 0;
 }
 
 /* Syscall 379. Release netlock. Return 0 on success and -1 on failure.  */
 
-asmlinkage int netlock_release(void){
-return 0;
-//	if (queue is empty) {
-		//...
-//	}
-//...
-
-/*
-	// Releases regular (read) lock
-	if (peekInQuueue()->type == NET_LOCK_R) {
-		signal(write);
-		wait(mutex2);
-		writers = writers - 1;
-		if (writers == 0) {
-			signal(read);
-		}
-		signal(mutex2);
-		removeFromQueue(type);
-	}
-    // Releases exclusive (write) lock
-    else if (peekInQueue()->type == NET_LOCK_E) {
-		wait(mutex1);
-		readers = readers - 1;
-		if (readers == 0) {
-			signal(write);
-		}
-		signal(mutex1);
-		removeFromQueue(type);
-	}
-    // Releases no lock
-	else if (type == NET_LOCK_N) {
-    }
-    */
-
-	/* 
-	if (queue is empty)
+asmlinkage int netlock_release(void)
+{
+	
+	spin_lock(&lock);
+	if (list_empty(&wait_queue.task_list))
 	{
-		read = 1;
-		write = 1;
+		if( reader_count <= 1)
+		{
+			reader_count = 0;
+			read_lock_available = 1;
+			write_lock_available = 1;
+		}
+		else
+		{
+			reader_count--;
+		}
+	}
+	else
+	{
+		wait_queue_head_t *pos;
+		int exclusiveFound = 0;
+		wait_queue_head_t temp;
+
+        // Save the head of the list
+		wait_queue_head_t *head = (wait_queue_head_t *) kmalloc(sizeof(wait_queue_head_t), GFP_KERNEL);
+		head->task_list = wait_queue.task_list; 
+		pos = head;
+
+		for (pos->task_list = *(&wait_queue.task_list)->next; \
+			(pos->task_list.next != *(&wait_queue.task_list.next)) && (pos->task_list.prev != *(&wait_queue.task_list.prev)); \
+			pos->task_list = *(pos->task_list.next))
+		{
+			if (pos->netlock_flag == 1)		//1 indicates exclusive
+			{
+				if(exclusiveFound == 0)
+				{
+					exclusiveFound = 1;
+					temp = *pos;
+				}
+			}
+			if (pos->netlock_flag == 0)		//1 indicates exclusive
+			{
+				reader_count++;
+			}
+
+		}
+		if(exclusiveFound == 1)
+		{
+			write_lock_available = 0;
+			remove_wait_queue(&temp, &wait_queue);
+			kfree(pos);
+			wake_up(&temp);
+		}
+		else
+		{
+			if(reader_count > 0)
+			{
+				read_lock_available = 0;
+			 	wake_up_all(head);
+			}
+		}
+		kfree(head);
+						
+	}
+
+	spin_unlock(&lock);
+	return 0;
+    
+	/*
+	if (queue is empty)
+	{	
+                
+		if( reader_count <= 1)
+		{
+			reader_count = 0;
+			read_lock_available = 1;
+			write_lock_available = 1;
+		}
+		else
+		{
+			reader_count--;
+		}
+		
 
 	}
 	else if (not empty)
@@ -150,14 +178,18 @@ return 0;
 		traverse through the queue
 		search for the first task with type E
 			wake up this task
-			write = 0;
+			remove from the queue
+			write_lock_available=0;
 		if no task with type E
-			wake up first task with type R
-			remove from queue (Wait_queue_remove)
-			read = 0;
-	}
+			wake up all task with type R
+			loop : remove from queue (Wait_queue_remove) ; reader_count++;
+			read_lock_available = 0;
+			
+	}	
 	return 0;
 	*/
+
+    return 0;
 }
 
   
