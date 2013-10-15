@@ -11,31 +11,22 @@
 whether a regular or exclusive lock is needed. Returns 0 on success 
 and -1 on failure.  */
 
-
-spinlock_t lock;
 wait_queue_t wait_queue;
-int read_lock_available=1, write_lock_available=1;
-int reader_count = 0;
-int queue_exists = 0;
-int lock_exists = 0;
+static int read_lock_available=1, write_lock_available=1;
+static int reader_count = 0;
+//static int queue_exists = 0;
+//static int lock_exists = 0;
+DEFINE_SPINLOCK(lock);
+
 asmlinkage int netlock_acquire(netlock_t type)
 {
 	
 	int ret = 0;
-	if (queue_exists == 0)
-	{
-		DEFINE_WAIT(wait_queue);
-		queue_exists = 1;
+	int ret2=0;
 
-	spin_lock(&lock);
-	}
-	if (lock_exists == 0)
-	{
-		DEFINE_SPINLOCK(lock);
-		lock_exists = 1;
-
-	spin_lock(&lock);
-	}
+	 DEFINE_WAIT(wait_queue);
+    spin_lock(&lock);
+   
     // Requests regular (read) lock
     if(type == NET_LOCK_R) 
     {
@@ -43,6 +34,8 @@ asmlinkage int netlock_acquire(netlock_t type)
 		if (write_lock_available == 1)
 		{
 			reader_count++;
+			ret2 = 3333;
+			spin_unlock(&lock);
 		}
 		else
 		{
@@ -50,6 +43,8 @@ asmlinkage int netlock_acquire(netlock_t type)
 			newThread = (wait_queue_head_t *)kmalloc(sizeof(wait_queue_head_t),GFP_KERNEL);
 			newThread->netlock_flag = 0;	//0 indicates regular lock, 1 indicates exclusive
 			add_wait_queue(newThread,&wait_queue);
+			ret2 = 4444;
+			spin_unlock(&lock);
 			schedule();
 
 		}
@@ -62,6 +57,8 @@ asmlinkage int netlock_acquire(netlock_t type)
     	if (write_lock_available == 1 && read_lock_available == 1)
     	{
     		write_lock_available = 0;
+    		ret2 = 5555;
+    		spin_unlock(&lock);
     	}
     	else
     	{
@@ -69,41 +66,54 @@ asmlinkage int netlock_acquire(netlock_t type)
 			newThread = (wait_queue_head_t *)kmalloc(sizeof(wait_queue_head_t),GFP_KERNEL);
 			newThread->netlock_flag = 1;	//0 indicates regular lock, 1 indicates exclusive
 			add_wait_queue(newThread,&wait_queue);
+			spin_unlock(&lock);
+			ret2 = 6666;
 			schedule();
+			
     	}
 		ret = 0;
     }
     // Requests no lock
     else if (type == NET_LOCK_N) 
     {
-	
+         ret2= 5633534; 	
 		ret = -1;
+		spin_unlock(&lock);
     }
 
-    spin_unlock(&lock);
-	return ret;
-	
-	return 0;
+    
+	return ret2;
 }
 
 /* Syscall 379. Release netlock. Return 0 on success and -1 on failure.  */
 
 asmlinkage int netlock_release(void)
 {
-	
+	int ret2;
+	DEFINE_WAIT(wait_queue);
+	//return 123456789;
 	spin_lock(&lock);
+	
 	if (list_empty(&wait_queue.task_list))
 	{
+		
 		if( reader_count <= 1)
 		{
 			reader_count = 0;
 			read_lock_available = 1;
 			write_lock_available = 1;
+			ret2 = 7777;
+			spin_unlock(&lock);
+			return ret2;
 		}
 		else
 		{
 			reader_count--;
+			ret2 = 8888;
+			spin_unlock(&lock);
+			return ret2;
 		}
+
 	}
 	else
 	{
@@ -126,11 +136,23 @@ asmlinkage int netlock_release(void)
 				{
 					exclusiveFound = 1;
 					temp = *pos;
+					ret2 = 9999;
+					spin_unlock(&lock);
+					return ret2;
 				}
+				else
+				{
+					spin_unlock(&lock);
+				}
+				ret2 = 10101010;
+				return ret2;
 			}
 			if (pos->netlock_flag == 0)		//1 indicates exclusive
 			{
 				reader_count++;
+				ret2 = 11111111;
+				spin_unlock(&lock);
+				return ret2;
 			}
 
 		}
@@ -139,6 +161,9 @@ asmlinkage int netlock_release(void)
 			write_lock_available = 0;
 			remove_wait_queue(&temp, &wait_queue);
 			kfree(pos);
+			ret2 = 12121212;
+			spin_unlock(&lock);
+			return ret2;
 			wake_up(&temp);
 		}
 		else
@@ -146,15 +171,18 @@ asmlinkage int netlock_release(void)
 			if(reader_count > 0)
 			{
 				read_lock_available = 0;
+				ret2 = 13131313;
+				spin_unlock(&lock);
+				return ret2;
 			 	wake_up_all(head);
 			}
 		}
 		kfree(head);
-						
+		ret2 = 14141414;
+		return ret2;			
 	}
 
-	spin_unlock(&lock);
-	return 0;
+	return ret2;
     
 	/*
 	if (queue is empty)
@@ -189,7 +217,7 @@ asmlinkage int netlock_release(void)
 	return 0;
 	*/
 
-    return 0;
+    //return 0;
 }
 
   
