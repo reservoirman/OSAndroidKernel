@@ -4,7 +4,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include "sthread.h"
-#include "sync.h"
+#include "sync_ad.h"
 #include <stdlib.h>
 
 sthread_sem_t test;
@@ -44,7 +44,7 @@ int thread_funk(void *arg)
 	{		
 	printf("thread %d\n",(int)arg);
 	i++;
-	//sleep(1);
+	sleep(1);
 	}
 	sthread_sem_up(&test);
 }
