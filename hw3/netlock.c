@@ -106,6 +106,7 @@ asmlinkage int netlock_release(void)
 		wait_queue_head_t temp;
 
         // Save the head of the list
+        
 		wait_queue_head_t *head = (wait_queue_head_t *) kmalloc(sizeof(wait_queue_head_t), GFP_KERNEL);
 		head->task_list = wait_queue.task_list; 
 		pos = head;
@@ -113,6 +114,7 @@ asmlinkage int netlock_release(void)
 		for (pos->task_list = *(&wait_queue.task_list)->next; \
 			(pos->task_list.next != *(&wait_queue.task_list.next)) && (pos->task_list.prev != *(&wait_queue.task_list.prev)); \
 			pos->task_list = *(pos->task_list.next))
+
 		{
 			if (pos->netlock_flag == 1)		//1 indicates exclusive
 			{
@@ -131,20 +133,29 @@ asmlinkage int netlock_release(void)
 		if(exclusiveFound == 1)
 		{
 			write_lock_available = 0;
+
 			remove_wait_queue(&temp, &wait_queue);
 			kfree(pos);
+			spin_unlock(&lock);
 			wake_up(&temp);
+			//prepare_to_wait(&temp, &wait_queue, TASK_INTERRUPTIBLE);
+			//finish_wait(&temp, &wait_queue);
 		}
 		else
 		{
 			if(reader_count > 0)
 			{
 				read_lock_available = 0;
+				spin_unlock(&lock);
 			 	wake_up_all(head);
+			}
+			else
+			{
+				spin_unlock(&lock);
 			}
 		}
 		kfree(head);
-		spin_unlock(&lock);			
+		
 	}
 
 	return 0;

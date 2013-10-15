@@ -76,9 +76,11 @@ int main(int argc, char *argv[])
 	//if (sthread_create(&thr5,  deposit, (void *)5) == -1)
    		//fprintf(stderr, "%s: sthread_create: deposit %s\n", argv[0], strerror(errno));
 
-   	while(1)
+   	int i = 0;
+   	while(i < 10)
    	{
-
+   		sleep(1);
+   		i++;
    	}
 
 /*
