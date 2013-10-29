@@ -1,0 +1,245 @@
+diff --git a/arch/arm/kernel/Makefile b/arch/arm/kernel/Makefile
+index 22b0f1e..bf87176 100644
+--- a/arch/arm/kernel/Makefile
++++ b/arch/arm/kernel/Makefile
+@@ -17,7 +17,7 @@ CFLAGS_REMOVE_return_address.o = -pg
+ 
+ obj-y		:= elf.o entry-armv.o entry-common.o irq.o opcodes.o \
+ 		   process.o ptrace.o return_address.o sched_clock.o \
+-		   setup.o signal.o stacktrace.o sys_arm.o time.o traps.o
++		   setup.o signal.o stacktrace.o sys_arm.o netlock.o time.o traps.o
+ 
+ obj-$(CONFIG_DEPRECATED_PARAM_STRUCT) += compat.o
+ 
+diff --git a/arch/arm/kernel/calls.S b/arch/arm/kernel/calls.S
+index 463ff4a..b6bc4c6 100644
+--- a/arch/arm/kernel/calls.S
++++ b/arch/arm/kernel/calls.S
+@@ -364,6 +364,7 @@
+ 		CALL(sys_fallocate)
+ 		CALL(sys_timerfd_settime)
+ 		CALL(sys_timerfd_gettime)
++
+ /* 355 */	CALL(sys_signalfd4)
+ 		CALL(sys_eventfd2)
+ 		CALL(sys_epoll_create1)
+@@ -387,6 +388,8 @@
+ /* 375 */	CALL(sys_setns)
+ 		CALL(sys_process_vm_readv)
+ 		CALL(sys_process_vm_writev)
++		CALL(netlock_acquire)
++		CALL(netlock_release)
+ #ifndef syscalls_counted
+ .equ syscalls_padding, ((NR_syscalls + 3) & ~3) - NR_syscalls
+ #define syscalls_counted
+diff --git a/arch/arm/kernel/netlock.c b/arch/arm/kernel/netlock.c
+new file mode 100644
+index 0000000..0b1a57b
+--- /dev/null
++++ b/arch/arm/kernel/netlock.c
+@@ -0,0 +1,165 @@
++
++#include <linux/sched.h>
++#include <asm-generic/errno-base.h>
++#include <linux/syscalls.h>
++#include <linux/wait.h>
++#include <linux/list.h>
++#include <linux/spinlock.h>
++#include <linux/slab.h>
++#include "netlock.h"
++/* Syscall 378. Acquire netlock. type indicates
++whether a regular or exclusive lock is needed. Returns 0 on success 
++and -1 on failure.  */
++
++wait_queue_t wait_queue;
++static int read_lock_available=1, write_lock_available=1;
++static int reader_count = 0;
++//static int queue_exists = 0;
++//static int lock_exists = 0;
++DEFINE_SPINLOCK(lock);
++
++asmlinkage int netlock_acquire(netlock_t type)
++{
++	
++	int ret = 0;
++
++	DEFINE_WAIT(wait_queue);
++    spin_lock(&lock);
++   
++    // Requests regular (read) lock
++    if(type == NET_LOCK_R) 
++    {
++	
++		if (write_lock_available == 1)
++		{
++			reader_count++;
++			spin_unlock(&lock);
++		}
++		else
++		{
++			wait_queue_head_t *newThread;
++			newThread = (wait_queue_head_t *)kmalloc(sizeof(wait_queue_head_t),GFP_KERNEL);
++			newThread->netlock_flag = 0;	//0 indicates regular lock, 1 indicates exclusive
++			add_wait_queue(newThread,&wait_queue);
++			spin_unlock(&lock);
++			schedule();
++
++		}
++		ret = 0;
++    }
++
++    // Requests exclusive (write) lock
++    else if (type == NET_LOCK_E) 
++    {
++    	if (write_lock_available == 1 && read_lock_available == 1)
++    	{
++    		write_lock_available = 0;
++    		spin_unlock(&lock);
++    	}
++    	else
++    	{
++    		wait_queue_head_t *newThread;
++			newThread = (wait_queue_head_t *)kmalloc(sizeof(wait_queue_head_t),GFP_KERNEL);
++			newThread->netlock_flag = 1;	//0 indicates regular lock, 1 indicates exclusive
++			add_wait_queue(newThread,&wait_queue);
++			spin_unlock(&lock);
++			schedule();
++			
++    	}
++		ret = 0;
++    }
++    // Requests no lock
++    else if (type == NET_LOCK_N) 
++    {
++		ret = -1;
++		spin_unlock(&lock);
++    }
++	return ret;
++}
++
++/* Syscall 379. Release netlock. Return 0 on success and -1 on failure.  */
++
++asmlinkage int netlock_release(void)
++{
++	DEFINE_WAIT(wait_queue);
++	spin_lock(&lock);
++	
++	if (list_empty(&wait_queue.task_list))
++	{
++		
++		if( reader_count <= 1)
++		{
++			reader_count = 0;
++			read_lock_available = 1;
++			write_lock_available = 1;
++		}
++		else
++		{
++			reader_count--;
++		}
++		spin_unlock(&lock);
++	}
++	else
++	{
++		wait_queue_head_t *pos;
++		int exclusiveFound = 0;
++		wait_queue_head_t temp;
++
++        // Save the head of the list
++        
++		wait_queue_head_t *head = (wait_queue_head_t *) kmalloc(sizeof(wait_queue_head_t), GFP_KERNEL);
++		head->task_list = wait_queue.task_list; 
++		pos = head;
++
++		for (pos->task_list = *(&wait_queue.task_list)->next; \
++			(pos->task_list.next != *(&wait_queue.task_list.next)) && (pos->task_list.prev != *(&wait_queue.task_list.prev)); \
++			pos->task_list = *(pos->task_list.next))
++
++		{
++			if (pos->netlock_flag == 1)		//1 indicates exclusive
++			{
++				if(exclusiveFound == 0)
++				{
++					exclusiveFound = 1;
++					temp = *pos;
++				}
++			}
++			if (pos->netlock_flag == 0)		//1 indicates exclusive
++			{
++				reader_count++;
++			}
++
++		}
++		if(exclusiveFound == 1)
++		{
++			write_lock_available = 0;
++
++			remove_wait_queue(&temp, &wait_queue);
++			kfree(pos);
++			spin_unlock(&lock);
++			wake_up(&temp);
++			//prepare_to_wait(&temp, &wait_queue, TASK_INTERRUPTIBLE);
++			//finish_wait(&temp, &wait_queue);
++		}
++		else
++		{
++			if(reader_count > 0)
++			{
++				read_lock_available = 0;
++				spin_unlock(&lock);
++			 	wake_up_all(head);
++			}
++			else
++			{
++				spin_unlock(&lock);
++			}
++		}
++		kfree(head);
++		
++	}
++
++	return 0;
++    
++}
++
++  
+diff --git a/arch/arm/kernel/netlock.h b/arch/arm/kernel/netlock.h
+new file mode 100644
+index 0000000..53792dd
+--- /dev/null
++++ b/arch/arm/kernel/netlock.h
+@@ -0,0 +1,22 @@
++#ifndef _NETLOCK_H
++#define _NETLOCK_H
++/* Syscall 378. Acquire netlock. type indicates
++        whether a regular or exclusive lock is needed. Returns 0 on success 
++	and -1 on failure.  
++      */
++     
++     enum __netlock_t {
++        NET_LOCK_N, /* Placeholder for no lock */
++	NET_LOCK_R, /* Indicates regular lock */
++	NET_LOCK_E, /* Indicates exclusive lock */
++     } ;
++     typedef enum __netlock_t netlock_t;
++	
++      int netlock_acquire(netlock_t type);
++
++     /* Syscall 379. Release netlock. Return 0 on success and -1 on failure.  
++      */
++     int netlock_release(void);
++
++
++#endif
+diff --git a/include/linux/wait.h b/include/linux/wait.h
+index e2094ac..c0825ef 100644
+--- a/include/linux/wait.h
++++ b/include/linux/wait.h
+@@ -49,6 +49,7 @@ struct wait_bit_queue {
+ struct __wait_queue_head {
+ 	spinlock_t lock;
+ 	struct list_head task_list;
++	int netlock_flag;
+ };
+ typedef struct __wait_queue_head wait_queue_head_t;
+ 
