@@ -51,8 +51,64 @@ index 3ede7d9..39c672d 100644
  obj-$(CONFIG_SMP) += cpupri.o
  obj-$(CONFIG_SCHED_AUTOGROUP) += auto_group.o
  obj-$(CONFIG_SCHEDSTATS) += stats.o
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index fc60d5b..d240ab2 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -5536,7 +5536,7 @@ static unsigned int get_rr_interval_fair(struct rq *rq, struct task_struct *task
+  * All the scheduling class methods:
+  */
+ const struct sched_class fair_sched_class = {
+-	.next			= &idle_sched_class,
++	.next			= &mycfs_sched_class,
+ 	.enqueue_task		= enqueue_task_fair,
+ 	.dequeue_task		= dequeue_task_fair,
+ 	.yield_task		= yield_task_fair,
+diff --git a/kernel/sched/mycfs.c b/kernel/sched/mycfs.c
+new file mode 100644
+index 0000000..6ba125f
+--- /dev/null
++++ b/kernel/sched/mycfs.c
+@@ -0,0 +1,37 @@
++#include <linux/sched.h>
++##include "mycfs.h"
++#include "sched.h"
++
++static void dequeue_task_mycfs(struct rq *rq, struct task_struct *prev,int flags)
++{
++
++}
++
++static void enqueue_task_mycfs(struct rq *rq, struct task_struct *p, int flags)
++{
++
++}
++//this will be the big one to implement!!!
++static struct task_struct *pick_next_task_mycfs(struct rq *rq)
++{
++	printk("myCFS scheduler is called\n");
++	return 0;
++}
++
++static void put_prev_task_mycfs(struct rq *rq, struct task_struct *prev)
++{
++
++}
++
++const struct sched_class mycfs_sched_class = {
++	.next = &idle_sched_class,
++	.dequeue_task	= dequeue_task_mycfs,
++	.pick_next_task = pick_next_task_mycfs,
++	.enqueue_task = enqueue_task_mycfs,
++	.put_prev_task	= put_prev_task_mycfs,
++	//the other hooks will need to be implemented too	
++};
++
++
++
++
 diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 5370bcb..9f27b17 100644
+index 5370bcb..9f024c4 100644
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
 @@ -273,6 +273,19 @@ struct cfs_rq {
@@ -69,7 +125,7 @@ index 5370bcb..9f27b17 100644
 +#endif
 +	struct rb_root tasks_timeline;
 +	struct rb_node *rb_leftmost;
-+	struct sched_entity *curr, *next, *last, *skip;
++	struct sched_mycfs_entity *curr, *next, *last, *skip;
 +};
 +
  static inline int rt_bandwidth_enabled(void)
