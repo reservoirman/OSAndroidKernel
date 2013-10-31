@@ -1239,7 +1239,6 @@ struct sched_rt_entity {
 	unsigned long timeout;
 	unsigned int time_slice;
 	int nr_cpus_allowed;
-
 	struct sched_rt_entity *back;
 #ifdef CONFIG_RT_GROUP_SCHED
 	struct sched_rt_entity	*parent;
@@ -1254,8 +1253,9 @@ struct sched_rt_entity {
 struct sched_mycfs_entity{
         struct sched_mycfs_entity	*parent;
         unsigned int time_slice;
-	u64			exec_start;
-	u64			vruntime;
+        struct rb_node		run_node;
+		u64			exec_start;
+		u64			vruntime;
 };
 /*
  * default timeslice is 100 msecs (used only for SCHED_RR tasks).

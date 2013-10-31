@@ -4066,7 +4066,7 @@ __setscheduler(struct rq *rq, struct task_struct *p, int policy, int prio)
 
 	if(policy == SCHED_MYCFS)
 	{
-		//PJ p->sched_class = &mycfs_sched_class;
+		p->sched_class = &mycfs_sched_class;
 		printk("process %d is assigned mycfs scheduler\n",p->pid);
 	}
 	set_load_weight(p);

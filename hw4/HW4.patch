@@ -1,5 +1,5 @@
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index ff6bb0f..bfb4386 100644
+index ff6bb0f..6a0a691 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -39,6 +39,7 @@
@@ -10,7 +10,7 @@ index ff6bb0f..bfb4386 100644
  /* Can be ORed in to make sure the process is reverted back to SCHED_NORMAL on fork */
  #define SCHED_RESET_ON_FORK     0x40000000
  
-@@ -1232,6 +1233,7 @@ struct sched_entity {
+@@ -1232,12 +1233,12 @@ struct sched_entity {
  #endif
  };
  
@@ -18,7 +18,13 @@ index ff6bb0f..bfb4386 100644
  struct sched_rt_entity {
  	struct list_head run_list;
  	unsigned long timeout;
-@@ -1248,6 +1250,13 @@ struct sched_rt_entity {
+ 	unsigned int time_slice;
+ 	int nr_cpus_allowed;
+-
+ 	struct sched_rt_entity *back;
+ #ifdef CONFIG_RT_GROUP_SCHED
+ 	struct sched_rt_entity	*parent;
+@@ -1248,6 +1249,14 @@ struct sched_rt_entity {
  #endif
  };
  
@@ -26,8 +32,9 @@ index ff6bb0f..bfb4386 100644
 +struct sched_mycfs_entity{
 +        struct sched_mycfs_entity	*parent;
 +        unsigned int time_slice;
-+	u64			exec_start;
-+	u64			vruntime;
++        struct rb_node		run_node;
++		u64			exec_start;
++		u64			vruntime;
 +};
  /*
   * default timeslice is 100 msecs (used only for SCHED_RR tasks).
@@ -54,7 +61,7 @@ index 3ede7d9..39c672d 100644
  obj-$(CONFIG_SCHED_AUTOGROUP) += auto_group.o
  obj-$(CONFIG_SCHEDSTATS) += stats.o
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 1cee48f..067e010 100644
+index 1cee48f..7e05631 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -4063,6 +4063,12 @@ __setscheduler(struct rq *rq, struct task_struct *p, int policy, int prio)
@@ -64,7 +71,7 @@ index 1cee48f..067e010 100644
 +
 +	if(policy == SCHED_MYCFS)
 +	{
-+		//PJ p->sched_class = &mycfs_sched_class;
++		p->sched_class = &mycfs_sched_class;
 +		printk("process %d is assigned mycfs scheduler\n",p->pid);
 +	}
  	set_load_weight(p);
@@ -116,33 +123,67 @@ index fc60d5b..d240ab2 100644
  	.yield_task		= yield_task_fair,
 diff --git a/kernel/sched/mycfs.c b/kernel/sched/mycfs.c
 new file mode 100644
-index 0000000..5ebcfa3
+index 0000000..fe0eeee
 --- /dev/null
 +++ b/kernel/sched/mycfs.c
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,76 @@
 +#include <linux/sched.h>
 +//#include "mycfs.h"
 +#include "sched.h"
 +
++
++
++
++
 +static void dequeue_task_mycfs(struct rq *rq, struct task_struct *prev,int flags)
 +{
-+
++	dec_nr_running(rq);
 +}
 +
 +static void enqueue_task_mycfs(struct rq *rq, struct task_struct *p, int flags)
 +{
++	inc_nr_running(rq);
 +
 +}
 +//this will be the big one to implement!!!
 +static struct task_struct *pick_next_task_mycfs(struct rq *rq)
 +{
-+	//printk("pick_next_task is called\n");
-+	return 0;
++	struct task_struct *stop = rq->stop;
++
++	if (stop && stop->on_rq)
++		return stop;
++
++
++	return NULL;
 +}
++
++
++
++
++
 +
 +static void put_prev_task_mycfs(struct rq *rq, struct task_struct *prev)
 +{
 +	//printk("put_prev_task_mycfs\n");
++}
++
++static void yield_task_mycfs(struct rq *rq)
++{
++}
++
++static int select_task_rq_mycfs(struct task_struct *p, int sd_flag, int wake_flags)
++{
++
++	return task_cpu(p); 
++	
++}
++
++static void task_tick_mycfs(struct rq *rq, struct task_struct *curr, int queued)
++{
++}
++
++static void task_fork_mycfs(struct task_struct *p)
++{
 +}
 +
 +const struct sched_class mycfs_sched_class = {
@@ -151,7 +192,12 @@ index 0000000..5ebcfa3
 +	.pick_next_task = pick_next_task_mycfs,
 +	.enqueue_task = enqueue_task_mycfs,
 +	.put_prev_task	= put_prev_task_mycfs,
-+	//the other hooks will need to be implemented too	
++	.yield_task		= yield_task_mycfs,
++	#ifdef CONFIG_SMP
++	.select_task_rq		= select_task_rq_mycfs,
++	#endif
++	.task_tick		= task_tick_mycfs,
++	.task_fork		= task_fork_mycfs,
 +};
 +
 +
