@@ -1,5 +1,5 @@
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index ff6bb0f..acb879d 100644
+index ff6bb0f..bfb4386 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -39,6 +39,7 @@
@@ -18,19 +18,21 @@ index ff6bb0f..acb879d 100644
  struct sched_rt_entity {
  	struct list_head run_list;
  	unsigned long timeout;
-@@ -1248,6 +1250,11 @@ struct sched_rt_entity {
+@@ -1248,6 +1250,13 @@ struct sched_rt_entity {
  #endif
  };
  
 +// PJ: populate it with entries similar to struct_entity
 +struct sched_mycfs_entity{
-+
-+
++        struct sched_mycfs_entity	*parent;
++        unsigned int time_slice;
++	u64			exec_start;
++	u64			vruntime;
 +};
  /*
   * default timeslice is 100 msecs (used only for SCHED_RR tasks).
   * Timeslices get refilled after they expire.
-@@ -1619,6 +1626,7 @@ struct task_struct {
+@@ -1619,6 +1628,7 @@ struct task_struct {
  #ifdef CONFIG_HAVE_HW_BREAKPOINT
  	atomic_t ptrace_bp_refcnt;
  #endif
@@ -51,6 +53,54 @@ index 3ede7d9..39c672d 100644
  obj-$(CONFIG_SMP) += cpupri.o
  obj-$(CONFIG_SCHED_AUTOGROUP) += auto_group.o
  obj-$(CONFIG_SCHEDSTATS) += stats.o
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 1cee48f..067e010 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -4063,6 +4063,12 @@ __setscheduler(struct rq *rq, struct task_struct *p, int policy, int prio)
+ 		p->sched_class = &rt_sched_class;
+ 	else
+ 		p->sched_class = &fair_sched_class;
++
++	if(policy == SCHED_MYCFS)
++	{
++		//PJ p->sched_class = &mycfs_sched_class;
++		printk("process %d is assigned mycfs scheduler\n",p->pid);
++	}
+ 	set_load_weight(p);
+ }
+ 
+@@ -4107,7 +4113,7 @@ recheck:
+ 
+ 		if (policy != SCHED_FIFO && policy != SCHED_RR &&
+ 				policy != SCHED_NORMAL && policy != SCHED_BATCH &&
+-				policy != SCHED_IDLE)
++				policy != SCHED_IDLE && policy!= SCHED_MYCFS)
+ 			return -EINVAL;
+ 	}
+ 
+@@ -4783,10 +4789,13 @@ SYSCALL_DEFINE1(sched_get_priority_max, int, policy)
+ 		ret = MAX_USER_RT_PRIO-1;
+ 		break;
+ 	case SCHED_NORMAL:
++	case SCHED_MYCFS:
+ 	case SCHED_BATCH:
+ 	case SCHED_IDLE:
+ 		ret = 0;
+ 		break;
++
++
+ 	}
+ 	return ret;
+ }
+@@ -4804,6 +4813,7 @@ SYSCALL_DEFINE1(sched_get_priority_min, int, policy)
+ 
+ 	switch (policy) {
+ 	case SCHED_FIFO:
++	case SCHED_MYCFS:
+ 	case SCHED_RR:
+ 		ret = 1;
+ 		break;
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
 index fc60d5b..d240ab2 100644
 --- a/kernel/sched/fair.c
@@ -66,12 +116,12 @@ index fc60d5b..d240ab2 100644
  	.yield_task		= yield_task_fair,
 diff --git a/kernel/sched/mycfs.c b/kernel/sched/mycfs.c
 new file mode 100644
-index 0000000..6ba125f
+index 0000000..5ebcfa3
 --- /dev/null
 +++ b/kernel/sched/mycfs.c
 @@ -0,0 +1,37 @@
 +#include <linux/sched.h>
-+##include "mycfs.h"
++//#include "mycfs.h"
 +#include "sched.h"
 +
 +static void dequeue_task_mycfs(struct rq *rq, struct task_struct *prev,int flags)
@@ -86,13 +136,13 @@ index 0000000..6ba125f
 +//this will be the big one to implement!!!
 +static struct task_struct *pick_next_task_mycfs(struct rq *rq)
 +{
-+	printk("myCFS scheduler is called\n");
++	//printk("pick_next_task is called\n");
 +	return 0;
 +}
 +
 +static void put_prev_task_mycfs(struct rq *rq, struct task_struct *prev)
 +{
-+
++	//printk("put_prev_task_mycfs\n");
 +}
 +
 +const struct sched_class mycfs_sched_class = {
@@ -108,7 +158,7 @@ index 0000000..6ba125f
 +
 +
 diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 5370bcb..9f024c4 100644
+index 5370bcb..9f27b17 100644
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
 @@ -273,6 +273,19 @@ struct cfs_rq {
@@ -125,7 +175,7 @@ index 5370bcb..9f024c4 100644
 +#endif
 +	struct rb_root tasks_timeline;
 +	struct rb_node *rb_leftmost;
-+	struct sched_mycfs_entity *curr, *next, *last, *skip;
++	struct sched_entity *curr, *next, *last, *skip;
 +};
 +
  static inline int rt_bandwidth_enabled(void)

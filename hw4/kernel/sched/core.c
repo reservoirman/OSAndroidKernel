@@ -4063,6 +4063,12 @@ __setscheduler(struct rq *rq, struct task_struct *p, int policy, int prio)
 		p->sched_class = &rt_sched_class;
 	else
 		p->sched_class = &fair_sched_class;
+
+	if(policy == SCHED_MYCFS)
+	{
+		//PJ p->sched_class = &mycfs_sched_class;
+		printk("process %d is assigned mycfs scheduler\n",p->pid);
+	}
 	set_load_weight(p);
 }
 

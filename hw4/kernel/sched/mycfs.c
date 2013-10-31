@@ -14,13 +14,13 @@ static void enqueue_task_mycfs(struct rq *rq, struct task_struct *p, int flags)
 //this will be the big one to implement!!!
 static struct task_struct *pick_next_task_mycfs(struct rq *rq)
 {
-	printk("myCFS scheduler is called\n");
+	//printk("pick_next_task is called\n");
 	return 0;
 }
 
 static void put_prev_task_mycfs(struct rq *rq, struct task_struct *prev)
 {
-
+	//printk("put_prev_task_mycfs\n");
 }
 
 const struct sched_class mycfs_sched_class = {

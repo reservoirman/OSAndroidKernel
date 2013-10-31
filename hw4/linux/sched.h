@@ -1255,9 +1255,7 @@ struct sched_mycfs_entity{
         struct sched_mycfs_entity	*parent;
         unsigned int time_slice;
 	u64			exec_start;
-	u64			sum_exec_runtime;
 	u64			vruntime;
-	u64			prev_sum_exec_runtime;
 };
 /*
  * default timeslice is 100 msecs (used only for SCHED_RR tasks).
