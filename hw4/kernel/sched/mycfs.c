@@ -1,5 +1,5 @@
 #include <linux/sched.h>
-##include "mycfs.h"
+//#include "mycfs.h"
 #include "sched.h"
 
 static void dequeue_task_mycfs(struct rq *rq, struct task_struct *prev,int flags)
