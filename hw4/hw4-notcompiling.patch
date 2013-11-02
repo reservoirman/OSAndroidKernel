@@ -1,0 +1,145 @@
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index ff6bb0f..36d8f73 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -39,6 +39,7 @@
+ #define SCHED_BATCH		3
+ /* SCHED_ISO: reserved but not implemented yet */
+ #define SCHED_IDLE		5
++#define SCHED_MYCFS		6
+ /* Can be ORed in to make sure the process is reverted back to SCHED_NORMAL on fork */
+ #define SCHED_RESET_ON_FORK     0x40000000
+ 
+@@ -1232,6 +1233,7 @@ struct sched_entity {
+ #endif
+ };
+ 
++
+ struct sched_rt_entity {
+ 	struct list_head run_list;
+ 	unsigned long timeout;
+@@ -1248,6 +1250,15 @@ struct sched_rt_entity {
+ #endif
+ };
+ 
++// PJ: populate it with entries similar to struct_entity
++struct sched_mycfs_entity{
++        struct sched_mycfs_entity	*parent;
++        unsigned int time_slice;
++	u64			exec_start;
++	u64			sum_exec_runtime;
++	u64			vruntime;
++	u64			prev_sum_exec_runtime;
++};
+ /*
+  * default timeslice is 100 msecs (used only for SCHED_RR tasks).
+  * Timeslices get refilled after they expire.
+@@ -1619,6 +1630,7 @@ struct task_struct {
+ #ifdef CONFIG_HAVE_HW_BREAKPOINT
+ 	atomic_t ptrace_bp_refcnt;
+ #endif
++	struct sched_mycfs_entity mycfs_se;
+ };
+ 
+ /* Future-safe accessor for struct task_struct's cpus_allowed. */
+diff --git a/kernel/sched/Makefile b/kernel/sched/Makefile
+index 3ede7d9..39c672d 100644
+--- a/kernel/sched/Makefile
++++ b/kernel/sched/Makefile
+@@ -11,7 +11,7 @@ ifneq ($(CONFIG_SCHED_OMIT_FRAME_POINTER),y)
+ CFLAGS_core.o := $(PROFILING) -fno-omit-frame-pointer
+ endif
+ 
+-obj-y += core.o clock.o idle_task.o fair.o rt.o stop_task.o sched_avg.o
++obj-y += core.o clock.o idle_task.o mycfs.o fair.o rt.o stop_task.o sched_avg.o
+ obj-$(CONFIG_SMP) += cpupri.o
+ obj-$(CONFIG_SCHED_AUTOGROUP) += auto_group.o
+ obj-$(CONFIG_SCHEDSTATS) += stats.o
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 1cee48f..b16dec2 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -4107,7 +4107,7 @@ recheck:
+ 
+ 		if (policy != SCHED_FIFO && policy != SCHED_RR &&
+ 				policy != SCHED_NORMAL && policy != SCHED_BATCH &&
+-				policy != SCHED_IDLE)
++				policy != SCHED_IDLE && policy!= SCHED_MYCFS)
+ 			return -EINVAL;
+ 	}
+ 
+@@ -4783,10 +4783,13 @@ SYSCALL_DEFINE1(sched_get_priority_max, int, policy)
+ 		ret = MAX_USER_RT_PRIO-1;
+ 		break;
+ 	case SCHED_NORMAL:
++	case SCHED_MYCFS:
+ 	case SCHED_BATCH:
+ 	case SCHED_IDLE:
+ 		ret = 0;
+ 		break;
++
++
+ 	}
+ 	return ret;
+ }
+@@ -4804,6 +4807,7 @@ SYSCALL_DEFINE1(sched_get_priority_min, int, policy)
+ 
+ 	switch (policy) {
+ 	case SCHED_FIFO:
++	case SCHED_MYCFS:
+ 	case SCHED_RR:
+ 		ret = 1;
+ 		break;
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index fc60d5b..d240ab2 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -5536,7 +5536,7 @@ static unsigned int get_rr_interval_fair(struct rq *rq, struct task_struct *task
+  * All the scheduling class methods:
+  */
+ const struct sched_class fair_sched_class = {
+-	.next			= &idle_sched_class,
++	.next			= &mycfs_sched_class,
+ 	.enqueue_task		= enqueue_task_fair,
+ 	.dequeue_task		= dequeue_task_fair,
+ 	.yield_task		= yield_task_fair,
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 5370bcb..9f27b17 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -273,6 +273,19 @@ struct cfs_rq {
+ #endif /* CONFIG_FAIR_GROUP_SCHED */
+ };
+ 
++//PJ: to be populated with many fields
++struct mycfs_rq 
++{
++	unsigned long nr_running, h_nr_running;
++	u64 min_vruntime;
++#ifndef CONFIG_64BIT
++	u64 min_vruntime_copy;
++#endif
++	struct rb_root tasks_timeline;
++	struct rb_node *rb_leftmost;
++	struct sched_entity *curr, *next, *last, *skip;
++};
++
+ static inline int rt_bandwidth_enabled(void)
+ {
+ 	return sysctl_sched_rt_runtime >= 0;
+@@ -465,6 +478,7 @@ struct rq {
+ #ifdef CONFIG_SMP
+ 	struct llist_head wake_list;
+ #endif
++	struct mycfs_rq mycfs;
+ };
+ 
+ static inline int cpu_of(struct rq *rq)
+@@ -856,6 +870,7 @@ enum cpuacct_stat_index {
+ extern const struct sched_class stop_sched_class;
+ extern const struct sched_class rt_sched_class;
+ extern const struct sched_class fair_sched_class;
++extern const struct sched_class mycfs_sched_class;
+ extern const struct sched_class idle_sched_class;
+ 
+ 
