@@ -4066,7 +4066,11 @@ __setscheduler(struct rq *rq, struct task_struct *p, int policy, int prio)
 
 	if(policy == SCHED_MYCFS)
 	{
-		//PJ p->sched_class = &mycfs_sched_class;
+		//PJ 
+		//p->sched_class = &fair_sched_class;
+		p->sched_class = &mycfs_sched_class;
+		//p->sched_class = &stop_sched_class;
+		//p->sched_class = &rt_sched_class;
 		printk("process %d is assigned mycfs scheduler\n",p->pid);
 	}
 	set_load_weight(p);
@@ -7013,6 +7017,7 @@ void __init sched_init(void)
 		rq->calc_load_update = jiffies + LOAD_FREQ;
 		init_cfs_rq(&rq->cfs);
 		init_rt_rq(&rq->rt, rq);
+		init_mycfs_rq(&rq->mycfs);
 #ifdef CONFIG_FAIR_GROUP_SCHED
 		root_task_group.shares = ROOT_TASK_GROUP_LOAD;
 		INIT_LIST_HEAD(&rq->leaf_cfs_rq_list);
