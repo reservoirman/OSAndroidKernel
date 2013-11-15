@@ -737,6 +737,7 @@ struct user_struct {
 	atomic_long_t locked_vm;
 #endif
 	long mem_max;
+	long cumulative_mem;
 };
 
 extern int uids_sysfs_init(void);
