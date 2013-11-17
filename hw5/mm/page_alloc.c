@@ -96,6 +96,8 @@ nodemask_t node_states[NR_NODE_STATES] __read_mostly = {
 };
 EXPORT_SYMBOL(node_states);
 
+extern uid_t user;
+extern int start;
 unsigned long totalram_pages __read_mostly;
 unsigned long totalreserve_pages __read_mostly;
 /*
@@ -2543,79 +2545,105 @@ struct page *
 __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order,
 			struct zonelist *zonelist, nodemask_t *nodemask)
 {
-	//struct task_struct *p;
-	/*p = zonelist->kswapd;
-	if (p->real_cred->user->mem_max != -1) 
-	{ 
-		if (p->real_cred->uid->cumulative_mem + (2^order)*PAGE_SIZE > p->real_cred->uid->mem_max)
+	enum zone_type high_zoneidx = gfp_zone(gfp_mask);
+	struct zone *preferred_zone;
+	struct page *page = NULL;
+	int migratetype = allocflags_to_migratetype(gfp_mask);
+	unsigned int cpuset_mems_cookie;
+	int alloc_flags = ALLOC_WMARK_LOW|ALLOC_CPUSET;
+	struct task_struct *p;
+	struct user_struct *this_user=NULL;
+	if(start == 1 )
+	{
+		if( user != 0)
 		{
-			out_of_memory();
-			p->real_cred->user->cumulative_mem += get_mm_rss(p->mm)*PAGE_SIZE;
-			return NULL;
+			this_user = find_user(user);
 		}
+		
+		if(this_user != NULL)
+		{
+			if (this_user->mem_max != -1) 
+			{ 
+				int required_mem = 1 << order;
+				printk("PJ: modified OOM_KILLER called \n");
+				for_each_process(p)
+				{
+					if(p->real_cred->uid == user)
+					{
+						if (this_user->cumulative_mem + required_mem*PAGE_SIZE > this_user->mem_max)
+						{
+							if (!try_set_zonelist_oom(zonelist, gfp_mask)) {
+								schedule_timeout_uninterruptible(1);
+								return NULL;
+							}
+									
+							out_of_memory(zonelist, gfp_mask, order, nodemask, false);
+							printk("PJ: modified oom_killer calls out_of_memory\n");
+							clear_zonelist_oom(zonelist, gfp_mask);
+						}
+						else
+						{
+							this_user->cumulative_mem += required_mem*PAGE_SIZE;
+						} 
+					}
+				}
+			}
+		}
+		
 	}
-	else */
-	{	
-		enum zone_type high_zoneidx = gfp_zone(gfp_mask);
-		struct zone *preferred_zone;
-		struct page *page = NULL;
-		int migratetype = allocflags_to_migratetype(gfp_mask);
-		unsigned int cpuset_mems_cookie;
-		int alloc_flags = ALLOC_WMARK_LOW|ALLOC_CPUSET;
 
-		gfp_mask &= gfp_allowed_mask;
+	gfp_mask &= gfp_allowed_mask;
 
-		lockdep_trace_alloc(gfp_mask);
+	lockdep_trace_alloc(gfp_mask);
 
-		might_sleep_if(gfp_mask & __GFP_WAIT);
+	might_sleep_if(gfp_mask & __GFP_WAIT);
 
-		if (should_fail_alloc_page(gfp_mask, order))
-			return NULL;
+	if (should_fail_alloc_page(gfp_mask, order))
+		return NULL;
 
-		/*
-		 * Check the zones suitable for the gfp_mask contain at least one
-		 * valid zone. It's possible to have an empty zonelist as a result
-		 * of GFP_THISNODE and a memoryless node
-		 */
-		if (unlikely(!zonelist->_zonerefs->zone))
-			return NULL;
+	/*
+	 * Check the zones suitable for the gfp_mask contain at least one
+	 * valid zone. It's possible to have an empty zonelist as a result
+	 * of GFP_THISNODE and a memoryless node
+	 */
+	if (unlikely(!zonelist->_zonerefs->zone))
+		return NULL;
 
-	retry_cpuset:
-		cpuset_mems_cookie = get_mems_allowed();
+retry_cpuset:
+	cpuset_mems_cookie = get_mems_allowed();
 
-		/* The preferred zone is used for statistics later */
-		first_zones_zonelist(zonelist, high_zoneidx,
-					nodemask ? : &cpuset_current_mems_allowed,
-					&preferred_zone);
-		if (!preferred_zone)
-			goto out;
+	/* The preferred zone is used for statistics later */
+	first_zones_zonelist(zonelist, high_zoneidx,
+				nodemask ? : &cpuset_current_mems_allowed,
+				&preferred_zone);
+	if (!preferred_zone)
+		goto out;
 
-	#ifdef CONFIG_CMA
-		if (allocflags_to_migratetype(gfp_mask) == MIGRATE_MOVABLE)
-			alloc_flags |= ALLOC_CMA;
-	#endif
-		/* First allocation attempt */
-		page = get_page_from_freelist(gfp_mask|__GFP_HARDWALL, nodemask, order,
-				zonelist, high_zoneidx, alloc_flags,
+#ifdef CONFIG_CMA
+	if (allocflags_to_migratetype(gfp_mask) == MIGRATE_MOVABLE)
+		alloc_flags |= ALLOC_CMA;
+#endif
+	/* First allocation attempt */
+	page = get_page_from_freelist(gfp_mask|__GFP_HARDWALL, nodemask, order,
+			zonelist, high_zoneidx, alloc_flags,
+			preferred_zone, migratetype);
+	if (unlikely(!page))
+		page = __alloc_pages_slowpath(gfp_mask, order,
+				zonelist, high_zoneidx, nodemask,
 				preferred_zone, migratetype);
-		if (unlikely(!page))
-			page = __alloc_pages_slowpath(gfp_mask, order,
-					zonelist, high_zoneidx, nodemask,
-					preferred_zone, migratetype);
 
-		trace_mm_page_alloc(page, order, gfp_mask, migratetype);
+	trace_mm_page_alloc(page, order, gfp_mask, migratetype);
 
-	out:
-		/*
-		 * When updating a task's mems_allowed, it is possible to race with
-		 * parallel threads in such a way that an allocation can fail while
-		 * the mask is being updated. If a page allocation is about to fail,
-		 * check if the cpuset changed during allocation and if so, retry.
-		 */
-		if (unlikely(!put_mems_allowed(cpuset_mems_cookie) && !page))
-			goto retry_cpuset;
-		return page;
-    }
+out:
+	/*
+	 * When updating a task's mems_allowed, it is possible to race with
+	 * parallel threads in such a way that an allocation can fail while
+	 * the mask is being updated. If a page allocation is about to fail,
+	 * check if the cpuset changed during allocation and if so, retry.
+	 */
+	if (unlikely(!put_mems_allowed(cpuset_mems_cookie) && !page))
+		goto retry_cpuset;
+	return page;
 }
 EXPORT_SYMBOL(__alloc_pages_nodemask);
 
