@@ -12,6 +12,7 @@ asmlinkage int set_mlimit(uid_t uid, long mem_max)
 	struct user_struct *usr;
 	printk("PJ: 1.user = %d uid= %d\n",user,uid);
 	usr= find_user(uid);
+	usr->cumulative_mem = 0;
 	for_each_process(p)
 	{
 		if(p->real_cred->uid == uid)
