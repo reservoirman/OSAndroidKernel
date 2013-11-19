@@ -1,0 +1,456 @@
+diff --git a/arch/arm/kernel/Makefile b/arch/arm/kernel/Makefile
+index 22b0f1e..51021dc 100644
+--- a/arch/arm/kernel/Makefile
++++ b/arch/arm/kernel/Makefile
+@@ -17,7 +17,7 @@ CFLAGS_REMOVE_return_address.o = -pg
+ 
+ obj-y		:= elf.o entry-armv.o entry-common.o irq.o opcodes.o \
+ 		   process.o ptrace.o return_address.o sched_clock.o \
+-		   setup.o signal.o stacktrace.o sys_arm.o time.o traps.o
++		   setup.o signal.o stacktrace.o sys_arm.o set_mlimit.o time.o traps.o
+ 
+ obj-$(CONFIG_DEPRECATED_PARAM_STRUCT) += compat.o
+ 
+diff --git a/arch/arm/kernel/calls.S b/arch/arm/kernel/calls.S
+index 463ff4a..ecd25e6 100644
+--- a/arch/arm/kernel/calls.S
++++ b/arch/arm/kernel/calls.S
+@@ -387,6 +387,7 @@
+ /* 375 */	CALL(sys_setns)
+ 		CALL(sys_process_vm_readv)
+ 		CALL(sys_process_vm_writev)
++		CALL(set_mlimit)
+ #ifndef syscalls_counted
+ .equ syscalls_padding, ((NR_syscalls + 3) & ~3) - NR_syscalls
+ #define syscalls_counted
+diff --git a/arch/arm/kernel/set_mlimit.c b/arch/arm/kernel/set_mlimit.c
+new file mode 100644
+index 0000000..2fd17e6
+--- /dev/null
++++ b/arch/arm/kernel/set_mlimit.c
+@@ -0,0 +1,30 @@
++#include <linux/sched.h>
++#include <asm-generic/errno-base.h>
++#include <linux/syscalls.h>
++#include <asm/thread_info.h>
++
++uid_t user;
++int start;
++
++asmlinkage int set_mlimit(uid_t uid, long mem_max)
++{
++	struct task_struct *p;
++	struct user_struct *usr;
++	printk("PJ: 1.user = %d uid= %d\n",user,uid);
++	usr= find_user(uid);
++	usr->cumulative_mem = 0;
++	for_each_process(p)
++	{
++		if(p->real_cred->uid == uid)
++		{
++			usr->cumulative_mem += get_mm_rss(p->mm)*PAGE_SIZE;
++		}
++	}
++	printk("cumulative_mem = %lu\n",usr->cumulative_mem );
++	user=uid;
++	printk("PJ: 1.user = %d uid= %d\n",user,uid);
++	usr->mem_max = mem_max;
++	printk("mem_max = %lu\n",usr->mem_max );
++	start = 1;
++	return usr->cumulative_mem;
++}
+\ No newline at end of file
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index ff6bb0f..8ce268f 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -736,6 +736,8 @@ struct user_struct {
+ #ifdef CONFIG_PERF_EVENTS
+ 	atomic_long_t locked_vm;
+ #endif
++	long mem_max;
++	long cumulative_mem;
+ };
+ 
+ extern int uids_sysfs_init(void);
+@@ -1619,6 +1621,7 @@ struct task_struct {
+ #ifdef CONFIG_HAVE_HW_BREAKPOINT
+ 	atomic_t ptrace_bp_refcnt;
+ #endif
++
+ };
+ 
+ /* Future-safe accessor for struct task_struct's cpus_allowed. */
+diff --git a/kernel/user.c b/kernel/user.c
+index 71dd236..9a251bc 100644
+--- a/kernel/user.c
++++ b/kernel/user.c
+@@ -152,7 +152,8 @@ struct user_struct *alloc_uid(struct user_namespace *ns, uid_t uid)
+ 
+ 		new->uid = uid;
+ 		atomic_set(&new->__count, 1);
+-
++		new->mem_max = -1;
++		new->cumulative_mem = 0;
+ 		new->user_ns = get_user_ns(ns);
+ 
+ 		/*
+diff --git a/mm/oom_kill.c b/mm/oom_kill.c
+index 46bf2ed5..48b8fa5 100644
+--- a/mm/oom_kill.c
++++ b/mm/oom_kill.c
+@@ -35,10 +35,11 @@
+ #include <linux/freezer.h>
+ #include <linux/ftrace.h>
+ #include <linux/ratelimit.h>
+-
++#include <asm/thread_info.h>
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/oom.h>
+ 
++extern uid_t user;
+ int sysctl_panic_on_oom;
+ int sysctl_oom_kill_allocating_task;
+ int sysctl_oom_dump_tasks = 1;
+@@ -184,6 +185,7 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
+ 		      const nodemask_t *nodemask, unsigned long totalpages)
+ {
+ 	long points;
++	points=0;
+ 
+ 	if (oom_unkillable_task(p, memcg, nodemask))
+ 		return 0;
+@@ -201,25 +203,32 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
+ 	 * The memory controller may have a limit of 0 bytes, so avoid a divide
+ 	 * by zero, if necessary.
+ 	 */
++	 
+ 	if (!totalpages)
+ 		totalpages = 1;
+-
+ 	/*
+ 	 * The baseline for the badness score is the proportion of RAM that each
+ 	 * task's rss, pagetable and swap space use.
+ 	 */
+-	points = get_mm_rss(p->mm) + p->mm->nr_ptes;
+-	points += get_mm_counter(p->mm, MM_SWAPENTS);
++	if(p->real_cred->user->mem_max != -1)
++	{
++		points = get_mm_rss(p->mm);
++	}
++	else
++	{
++		points = get_mm_rss(p->mm) + p->mm->nr_ptes;
++		points += get_mm_counter(p->mm, MM_SWAPENTS);
+ 
+-	points *= 1000;
+-	points /= totalpages;
++		points *= 1000;
++		points /= totalpages;
++	}
+ 	task_unlock(p);
+ 
+ 	/*
+ 	 * Root processes get 3% bonus, just like the __vm_enough_memory()
+ 	 * implementation used by LSMs.
+ 	 */
+-	if (has_capability_noaudit(p, CAP_SYS_ADMIN))
++    if (has_capability_noaudit(p, CAP_SYS_ADMIN))
+ 		points -= 30;
+ 
+ 	/*
+@@ -227,7 +236,13 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
+ 	 * either completely disable oom killing or always prefer a certain
+ 	 * task.
+ 	 */
+-	points += p->signal->oom_score_adj;
++	 
++	if (p->real_cred->user->mem_max == -1)
++	{
++		points += p->signal->oom_score_adj;	
++	}
++	
++	
+ 
+ 	/*
+ 	 * Never return 0 for an eligible task that may be killed since it's
+@@ -236,7 +251,9 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
+ 	 */
+ 	if (points <= 0)
+ 		return 1;
++	
+ 	return (points < 1000) ? points : 1000;
++
+ }
+ 
+ /*
+@@ -314,65 +331,95 @@ static struct task_struct *select_bad_process(unsigned int *ppoints,
+ {
+ 	struct task_struct *g, *p;
+ 	struct task_struct *chosen = NULL;
++	struct user_struct *this_user=NULL;
++	if( user != 0)
++	{
++		this_user = find_user(user);
++		printk("this_user %d\n",this_user->uid);
++	}
+ 	*ppoints = 0;
++	if(this_user != NULL)
++	{
++
++		printk("PJ: means user is pre-initialized\n");
++		if(this_user->mem_max != -1)
++		{
++			for_each_process(p)
++			{
++				unsigned int points;
++				if(p->real_cred->uid == user)
++				{
++					points = oom_badness(p, memcg, nodemask, totalpages);
++					if (points > *ppoints)
++					{
++						chosen = p;
++						*ppoints = points;
++					}
++				}
++			}
+ 
+-	do_each_thread(g, p) {
+-		unsigned int points;
+-
+-		if (p->exit_state)
+-			continue;
+-		if (oom_unkillable_task(p, memcg, nodemask))
+-			continue;
+-
+-		/*
+-		 * This task already has access to memory reserves and is
+-		 * being killed. Don't allow any other task access to the
+-		 * memory reserve.
+-		 *
+-		 * Note: this may have a chance of deadlock if it gets
+-		 * blocked waiting for another task which itself is waiting
+-		 * for memory. Is there a better alternative?
+-		 */
+-		if (test_tsk_thread_flag(p, TIF_MEMDIE)) {
+-			if (unlikely(frozen(p)))
+-				__thaw_task(p);
+-			if (!force_kill)
+-				return ERR_PTR(-1UL);
+ 		}
+-		if (!p->mm)
+-			continue;
++	}
++	else
++	{
++		do_each_thread(g, p) {	
++			unsigned int points;
++
++			if (p->exit_state)
++				continue;
++			if (oom_unkillable_task(p, memcg, nodemask))
++				continue;
+ 
+-		if (p->flags & PF_EXITING) {
+ 			/*
+-			 * If p is the current task and is in the process of
+-			 * releasing memory, we allow the "kill" to set
+-			 * TIF_MEMDIE, which will allow it to gain access to
+-			 * memory reserves.  Otherwise, it may stall forever.
++			 * This task already has access to memory reserves and is
++			 * being killed. Don't allow any other task access to the
++			 * memory reserve.
+ 			 *
+-			 * The loop isn't broken here, however, in case other
+-			 * threads are found to have already been oom killed.
++			 * Note: this may have a chance of deadlock if it gets
++			 * blocked waiting for another task which itself is waiting
++			 * for memory. Is there a better alternative?
+ 			 */
+-			if (p == current) {
+-				chosen = p;
+-				*ppoints = 1000;
+-			} else if (!force_kill) {
+-				/*
+-				 * If this task is not being ptraced on exit,
+-				 * then wait for it to finish before killing
+-				 * some other task unnecessarily.
+-				 */
+-				if (!(p->group_leader->ptrace & PT_TRACE_EXIT))
++			if (test_tsk_thread_flag(p, TIF_MEMDIE)) {
++				if (unlikely(frozen(p)))
++					__thaw_task(p);
++				if (!force_kill)
+ 					return ERR_PTR(-1UL);
+ 			}
+-		}
++			if (!p->mm)
++				continue;
+ 
+-		points = oom_badness(p, memcg, nodemask, totalpages);
+-		if (points > *ppoints) {
+-			chosen = p;
+-			*ppoints = points;
+-		}
+-	} while_each_thread(g, p);
++			if (p->flags & PF_EXITING) {
++				/*
++				 * If p is the current task and is in the process of
++				 * releasing memory, we allow the "kill" to set
++				 * TIF_MEMDIE, which will allow it to gain access to
++				 * memory reserves.  Otherwise, it may stall forever.
++				 *
++				 * The loop isn't broken here, however, in case other
++				 * threads are found to have already been oom killed.
++				 */
++				if (p == current) {
++					chosen = p;
++					*ppoints = 1000;
++				} else if (!force_kill) {
++					/*
++					 * If this task is not being ptraced on exit,
++					 * then wait for it to finish before killing
++					 * some other task unnecessarily.
++					 */
++					if (!(p->group_leader->ptrace & PT_TRACE_EXIT))
++						return ERR_PTR(-1UL);
++				}
++			}
++			points = oom_badness(p, memcg, nodemask, totalpages);
++			if (points > *ppoints) 
++			{		
++				chosen = p;
++				*ppoints = points;
++			}
+ 
++		}while_each_thread(g, p);
++	}
+ 	return chosen;
+ }
+ 
+@@ -575,9 +622,12 @@ void mem_cgroup_out_of_memory(struct mem_cgroup *memcg, gfp_t gfp_mask,
+ 	limit = mem_cgroup_get_limit(memcg) >> PAGE_SHIFT;
+ 	read_lock(&tasklist_lock);
+ 	p = select_bad_process(&points, limit, memcg, NULL, false);
++	
+ 	if (p && PTR_ERR(p) != -1UL)
+-		oom_kill_process(p, gfp_mask, order, points, limit, memcg, NULL,
+-				 "Memory cgroup out of memory");
++	{
++		p->real_cred->user->cumulative_mem -= get_mm_rss(p->mm)*PAGE_SIZE;
++		oom_kill_process(p, gfp_mask, order, points, limit, memcg, NULL,"Memory cgroup out of memory");
++	}
+ 	read_unlock(&tasklist_lock);
+ }
+ #endif
+@@ -738,11 +788,16 @@ void out_of_memory(struct zonelist *zonelist, gfp_t gfp_mask,
+ 		oom_kill_process(current, gfp_mask, order, 0, totalpages, NULL,
+ 				 nodemask,
+ 				 "Out of memory (oom_kill_allocating_task)");
++		if(current->real_cred->uid == user)
++		{
++			current->real_cred->user->cumulative_mem -= get_mm_rss(current->mm)*PAGE_SIZE;
++		}
+ 		goto out;
+ 	}
+ 
+ 	p = select_bad_process(&points, totalpages, NULL, mpol_mask,
+ 			       force_kill);
++	
+ 	/* Found nothing?!?! Either we hang forever, or we panic. */
+ 	if (!p) {
+ 		dump_header(NULL, gfp_mask, order, NULL, mpol_mask);
+@@ -750,9 +805,14 @@ void out_of_memory(struct zonelist *zonelist, gfp_t gfp_mask,
+ 		panic("Out of memory and no killable processes...\n");
+ 	}
+ 	if (PTR_ERR(p) != -1UL) {
++		if(p->real_cred->uid == user)
++		{
++			p->real_cred->user->cumulative_mem -= get_mm_rss(p->mm)*PAGE_SIZE;
++		}
+ 		oom_kill_process(p, gfp_mask, order, points, totalpages, NULL,
+ 				 nodemask, "Out of memory");
+ 		killed = 1;
++
+ 	}
+ out:
+ 	read_unlock(&tasklist_lock);
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 69b9521..acbf4b8 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -63,6 +63,7 @@
+ #include <asm/tlbflush.h>
+ #include <asm/div64.h>
+ #include "internal.h"
++#include <asm/thread_info.h>
+ 
+ #ifdef CONFIG_USE_PERCPU_NUMA_NODE_ID
+ DEFINE_PER_CPU(int, numa_node);
+@@ -96,6 +97,8 @@ nodemask_t node_states[NR_NODE_STATES] __read_mostly = {
+ };
+ EXPORT_SYMBOL(node_states);
+ 
++extern uid_t user;
++extern int start;
+ unsigned long totalram_pages __read_mostly;
+ unsigned long totalreserve_pages __read_mostly;
+ /*
+@@ -2549,7 +2552,48 @@ __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order,
+ 	int migratetype = allocflags_to_migratetype(gfp_mask);
+ 	unsigned int cpuset_mems_cookie;
+ 	int alloc_flags = ALLOC_WMARK_LOW|ALLOC_CPUSET;
+-
++	struct task_struct *p;
++	struct user_struct *this_user=NULL;
++
++	if(start == 1 )
++	{
++		if( user != 0)
++		{
++			this_user = find_user(user);
++		}
++		
++		if(this_user != NULL)
++		{
++			if (this_user->mem_max != -1) 
++			{ 
++				int required_mem = 1 << order;
++				printk("PJ: modified OOM_KILLER called \n");
++				for_each_process(p)
++				{
++					if(p->real_cred->uid == user)
++					{
++						if (this_user->cumulative_mem + required_mem*PAGE_SIZE > this_user->mem_max)
++						{
++							if (!try_set_zonelist_oom(zonelist, gfp_mask)) {
++								schedule_timeout_uninterruptible(1);
++								return NULL;
++							}
++									
++							out_of_memory(zonelist, gfp_mask, order, nodemask, false);
++							printk("PJ: modified oom_killer calls out_of_memory\n");
++							clear_zonelist_oom(zonelist, gfp_mask);
++						}
++						else
++						{
++							this_user->cumulative_mem += required_mem*PAGE_SIZE;
++						} 
++					}
++				}
++			}
++		}
++		
++	}
++			
+ 	gfp_mask &= gfp_allowed_mask;
+ 
+ 	lockdep_trace_alloc(gfp_mask);
+@@ -2601,7 +2645,6 @@ out:
+ 	 */
+ 	if (unlikely(!put_mems_allowed(cpuset_mems_cookie) && !page))
+ 		goto retry_cpuset;
+-
+ 	return page;
+ }
+ EXPORT_SYMBOL(__alloc_pages_nodemask);

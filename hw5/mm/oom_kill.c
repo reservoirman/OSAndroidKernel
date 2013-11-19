@@ -35,7 +35,7 @@
 #include <linux/freezer.h>
 #include <linux/ftrace.h>
 #include <linux/ratelimit.h>
-
+#include <asm/thread_info.h>
 #define CREATE_TRACE_POINTS
 #include <trace/events/oom.h>
 
@@ -185,6 +185,7 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
 		      const nodemask_t *nodemask, unsigned long totalpages)
 {
 	long points;
+	points=0;
 
 	if (oom_unkillable_task(p, memcg, nodemask))
 		return 0;
@@ -202,9 +203,9 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
 	 * The memory controller may have a limit of 0 bytes, so avoid a divide
 	 * by zero, if necessary.
 	 */
+	 
 	if (!totalpages)
 		totalpages = 1;
-
 	/*
 	 * The baseline for the badness score is the proportion of RAM that each
 	 * task's rss, pagetable and swap space use.
@@ -220,14 +221,14 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
 
 		points *= 1000;
 		points /= totalpages;
-    }
+	}
 	task_unlock(p);
 
 	/*
 	 * Root processes get 3% bonus, just like the __vm_enough_memory()
 	 * implementation used by LSMs.
 	 */
-	if (has_capability_noaudit(p, CAP_SYS_ADMIN))
+    if (has_capability_noaudit(p, CAP_SYS_ADMIN))
 		points -= 30;
 
 	/*
@@ -235,7 +236,13 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
 	 * either completely disable oom killing or always prefer a certain
 	 * task.
 	 */
-	points += p->signal->oom_score_adj;
+	 
+	if (p->real_cred->user->mem_max == -1)
+	{
+		points += p->signal->oom_score_adj;	
+	}
+	
+	
 
 	/*
 	 * Never return 0 for an eligible task that may be killed since it's
@@ -246,6 +253,7 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
 		return 1;
 	
 	return (points < 1000) ? points : 1000;
+
 }
 
 /*
@@ -617,8 +625,8 @@ void mem_cgroup_out_of_memory(struct mem_cgroup *memcg, gfp_t gfp_mask,
 	
 	if (p && PTR_ERR(p) != -1UL)
 	{
-		oom_kill_process(p, gfp_mask, order, points, limit, memcg, NULL,"Memory cgroup out of memory");
 		p->real_cred->user->cumulative_mem -= get_mm_rss(p->mm)*PAGE_SIZE;
+		oom_kill_process(p, gfp_mask, order, points, limit, memcg, NULL,"Memory cgroup out of memory");
 	}
 	read_unlock(&tasklist_lock);
 }
@@ -797,13 +805,14 @@ void out_of_memory(struct zonelist *zonelist, gfp_t gfp_mask,
 		panic("Out of memory and no killable processes...\n");
 	}
 	if (PTR_ERR(p) != -1UL) {
-		oom_kill_process(p, gfp_mask, order, points, totalpages, NULL,
-				 nodemask, "Out of memory");
-		killed = 1;
 		if(p->real_cred->uid == user)
 		{
 			p->real_cred->user->cumulative_mem -= get_mm_rss(p->mm)*PAGE_SIZE;
 		}
+		oom_kill_process(p, gfp_mask, order, points, totalpages, NULL,
+				 nodemask, "Out of memory");
+		killed = 1;
+
 	}
 out:
 	read_unlock(&tasklist_lock);

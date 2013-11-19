@@ -63,6 +63,7 @@
 #include <asm/tlbflush.h>
 #include <asm/div64.h>
 #include "internal.h"
+#include <asm/thread_info.h>
 
 #ifdef CONFIG_USE_PERCPU_NUMA_NODE_ID
 DEFINE_PER_CPU(int, numa_node);
@@ -2553,6 +2554,7 @@ __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order,
 	int alloc_flags = ALLOC_WMARK_LOW|ALLOC_CPUSET;
 	struct task_struct *p;
 	struct user_struct *this_user=NULL;
+
 	if(start == 1 )
 	{
 		if( user != 0)
@@ -2591,7 +2593,7 @@ __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order,
 		}
 		
 	}
-
+			
 	gfp_mask &= gfp_allowed_mask;
 
 	lockdep_trace_alloc(gfp_mask);
