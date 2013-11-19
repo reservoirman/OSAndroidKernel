@@ -35,7 +35,7 @@
 #include <linux/freezer.h>
 #include <linux/ftrace.h>
 #include <linux/ratelimit.h>
-
+#include <asm/thread_info.h>
 #define CREATE_TRACE_POINTS
 #include <trace/events/oom.h>
 
@@ -185,65 +185,75 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
 		      const nodemask_t *nodemask, unsigned long totalpages)
 {
 	long points;
+	points=0;
+
+	if (oom_unkillable_task(p, memcg, nodemask))
+		return 0;
+
+	p = find_lock_task_mm(p);
+	if (!p)
+		return 0;
+
+	if (p->signal->oom_score_adj == OOM_SCORE_ADJ_MIN) {
+		task_unlock(p);
+		return 0;
+	}
+
+	/*
+	 * The memory controller may have a limit of 0 bytes, so avoid a divide
+	 * by zero, if necessary.
+	 */
+	 
+	if (!totalpages)
+		totalpages = 1;
+	/*
+	 * The baseline for the badness score is the proportion of RAM that each
+	 * task's rss, pagetable and swap space use.
+	 */
 	if(p->real_cred->user->mem_max != -1)
 	{
 		points = get_mm_rss(p->mm);
 	}
 	else
-	{	
-		if (oom_unkillable_task(p, memcg, nodemask))
-			return 0;
-
-		p = find_lock_task_mm(p);
-		if (!p)
-			return 0;
-
-		if (p->signal->oom_score_adj == OOM_SCORE_ADJ_MIN) {
-			task_unlock(p);
-			return 0;
-		}
-
-		/*
-		 * The memory controller may have a limit of 0 bytes, so avoid a divide
-		 * by zero, if necessary.
-		 */
-		if (!totalpages)
-			totalpages = 1;
-
-		/*
-		 * The baseline for the badness score is the proportion of RAM that each
-		 * task's rss, pagetable and swap space use.
-		 */
+	{
 		points = get_mm_rss(p->mm) + p->mm->nr_ptes;
 		points += get_mm_counter(p->mm, MM_SWAPENTS);
 
 		points *= 1000;
 		points /= totalpages;
-		task_unlock(p);
-
-		/*
-		 * Root processes get 3% bonus, just like the __vm_enough_memory()
-		 * implementation used by LSMs.
-		 */
-		if (has_capability_noaudit(p, CAP_SYS_ADMIN))
-			points -= 30;
-
-		/*
-		 * /proc/pid/oom_score_adj ranges from -1000 to +1000 such that it may
-		 * either completely disable oom killing or always prefer a certain
-		 * task.
-		 */
-		points += p->signal->oom_score_adj;
-
-		/*
-		 * Never return 0 for an eligible task that may be killed since it's
-		 * possible that no single user task uses more than 0.1% of memory and
-		 * no single admin tasks uses more than 3.0%.
-		 */
-		if (points <= 0)
-			return 1;
 	}
+	task_unlock(p);
+
+	/*
+	 * Root processes get 3% bonus, just like the __vm_enough_memory()
+	 * implementation used by LSMs.
+	 */
+    if (has_capability_noaudit(p, CAP_SYS_ADMIN))
+		points -= 30;
+
+	/*
+	 * /proc/pid/oom_score_adj ranges from -1000 to +1000 such that it may
+	 * either completely disable oom killing or always prefer a certain
+	 * task.
+	 */
+	 
+	if (p->real_cred->user->mem_max == -1)
+	{
+		points += p->signal->oom_score_adj;	
+	}
+	
+	
+
+	/*
+	 * Never return 0 for an eligible task that may be killed since it's
+	 * possible that no single user task uses more than 0.1% of memory and
+	 * no single admin tasks uses more than 3.0%.
+	 */
+	if (points <= 0)
+		return 1;
+	
 	return (points < 1000) ? points : 1000;
+
 }
 
 /*
@@ -321,85 +331,95 @@ static struct task_struct *select_bad_process(unsigned int *ppoints,
 {
 	struct task_struct *g, *p;
 	struct task_struct *chosen = NULL;
+	struct user_struct *this_user=NULL;
+	if( user != 0)
+	{
+		this_user = find_user(user);
+		printk("this_user %d\n",this_user->uid);
+	}
 	*ppoints = 0;
-	
-	
-	do_each_thread(g, p) {	
-		unsigned int points;
+	if(this_user != NULL)
+	{
 
-		if (p->exit_state)
-			continue;
-		if (oom_unkillable_task(p, memcg, nodemask))
-			continue;
+		printk("PJ: means user is pre-initialized\n");
+		if(this_user->mem_max != -1)
+		{
+			for_each_process(p)
+			{
+				unsigned int points;
+				if(p->real_cred->uid == user)
+				{
+					points = oom_badness(p, memcg, nodemask, totalpages);
+					if (points > *ppoints)
+					{
+						chosen = p;
+						*ppoints = points;
+					}
+				}
+			}
 
-		/*
-		 * This task already has access to memory reserves and is
-		 * being killed. Don't allow any other task access to the
-		 * memory reserve.
-		 *
-		 * Note: this may have a chance of deadlock if it gets
-		 * blocked waiting for another task which itself is waiting
-		 * for memory. Is there a better alternative?
-		 */
-		if (test_tsk_thread_flag(p, TIF_MEMDIE)) {
-			if (unlikely(frozen(p)))
-				__thaw_task(p);
-			if (!force_kill)
-				return ERR_PTR(-1UL);
 		}
-		if (!p->mm)
-			continue;
+	}
+	else
+	{
+		do_each_thread(g, p) {	
+			unsigned int points;
 
-		if (p->flags & PF_EXITING) {
+			if (p->exit_state)
+				continue;
+			if (oom_unkillable_task(p, memcg, nodemask))
+				continue;
+
 			/*
-			 * If p is the current task and is in the process of
-			 * releasing memory, we allow the "kill" to set
-			 * TIF_MEMDIE, which will allow it to gain access to
-			 * memory reserves.  Otherwise, it may stall forever.
+			 * This task already has access to memory reserves and is
+			 * being killed. Don't allow any other task access to the
+			 * memory reserve.
 			 *
-			 * The loop isn't broken here, however, in case other
-			 * threads are found to have already been oom killed.
+			 * Note: this may have a chance of deadlock if it gets
+			 * blocked waiting for another task which itself is waiting
+			 * for memory. Is there a better alternative?
 			 */
-			if (p == current) {
-				chosen = p;
-				*ppoints = 1000;
-			} else if (!force_kill) {
-				/*
-				 * If this task is not being ptraced on exit,
-				 * then wait for it to finish before killing
-				 * some other task unnecessarily.
-				 */
-				if (!(p->group_leader->ptrace & PT_TRACE_EXIT))
+			if (test_tsk_thread_flag(p, TIF_MEMDIE)) {
+				if (unlikely(frozen(p)))
+					__thaw_task(p);
+				if (!force_kill)
 					return ERR_PTR(-1UL);
 			}
-		}
+			if (!p->mm)
+				continue;
 
-		if (p->real_cred->user->mem_max == -1)
-		{
+			if (p->flags & PF_EXITING) {
+				/*
+				 * If p is the current task and is in the process of
+				 * releasing memory, we allow the "kill" to set
+				 * TIF_MEMDIE, which will allow it to gain access to
+				 * memory reserves.  Otherwise, it may stall forever.
+				 *
+				 * The loop isn't broken here, however, in case other
+				 * threads are found to have already been oom killed.
+				 */
+				if (p == current) {
+					chosen = p;
+					*ppoints = 1000;
+				} else if (!force_kill) {
+					/*
+					 * If this task is not being ptraced on exit,
+					 * then wait for it to finish before killing
+					 * some other task unnecessarily.
+					 */
+					if (!(p->group_leader->ptrace & PT_TRACE_EXIT))
+						return ERR_PTR(-1UL);
+				}
+			}
 			points = oom_badness(p, memcg, nodemask, totalpages);
-			if (points > *ppoints)
-			{
+			if (points > *ppoints) 
+			{		
 				chosen = p;
 				*ppoints = points;
 			}
 
-		}
-		else
-		{
-			if(p->real_cred->uid == user) 
-			{
-				points = oom_badness(p, memcg, nodemask, totalpages);
-				if (points > *ppoints)
-				{
-					chosen = p;
-					*ppoints = points;
-				}
-			}
-		}
-
-
-	} while_each_thread(g, p);
-
+		}while_each_thread(g, p);
+	}
 	return chosen;
 }
 
@@ -602,10 +622,12 @@ void mem_cgroup_out_of_memory(struct mem_cgroup *memcg, gfp_t gfp_mask,
 	limit = mem_cgroup_get_limit(memcg) >> PAGE_SHIFT;
 	read_lock(&tasklist_lock);
 	p = select_bad_process(&points, limit, memcg, NULL, false);
-	p->real_cred->user->cumulative_mem -= get_mm_rss(p->mm)*PAGE_SIZE;
 	
 	if (p && PTR_ERR(p) != -1UL)
+	{
+		p->real_cred->user->cumulative_mem -= get_mm_rss(p->mm)*PAGE_SIZE;
 		oom_kill_process(p, gfp_mask, order, points, limit, memcg, NULL,"Memory cgroup out of memory");
+	}
 	read_unlock(&tasklist_lock);
 }
 #endif
@@ -766,12 +788,15 @@ void out_of_memory(struct zonelist *zonelist, gfp_t gfp_mask,
 		oom_kill_process(current, gfp_mask, order, 0, totalpages, NULL,
 				 nodemask,
 				 "Out of memory (oom_kill_allocating_task)");
+		if(current->real_cred->uid == user)
+		{
+			current->real_cred->user->cumulative_mem -= get_mm_rss(current->mm)*PAGE_SIZE;
+		}
 		goto out;
 	}
 
 	p = select_bad_process(&points, totalpages, NULL, mpol_mask,
 			       force_kill);
-	p->real_cred->user->cumulative_mem -= get_mm_rss(p->mm)*PAGE_SIZE;
 	
 	/* Found nothing?!?! Either we hang forever, or we panic. */
 	if (!p) {
@@ -780,9 +805,14 @@ void out_of_memory(struct zonelist *zonelist, gfp_t gfp_mask,
 		panic("Out of memory and no killable processes...\n");
 	}
 	if (PTR_ERR(p) != -1UL) {
+		if(p->real_cred->uid == user)
+		{
+			p->real_cred->user->cumulative_mem -= get_mm_rss(p->mm)*PAGE_SIZE;
+		}
 		oom_kill_process(p, gfp_mask, order, points, totalpages, NULL,
 				 nodemask, "Out of memory");
 		killed = 1;
+
 	}
 out:
 	read_unlock(&tasklist_lock);

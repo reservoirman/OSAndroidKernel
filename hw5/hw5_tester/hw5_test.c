@@ -38,12 +38,12 @@ int main(int argc, char **argv) {
             m[j] = '\0';
         }
         printf("child process finish malloc: pid=%d, uid=%d, mem=%d\n", getpid(), getuid(), mem);
+        while(1){}
         return 0;
      }
   }
 
   for (i = 0; i < argc-3; ++i) {
-   
     waitpid(pids[i], NULL, 0);
   }
 
