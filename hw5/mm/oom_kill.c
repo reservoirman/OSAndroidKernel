@@ -222,6 +222,8 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
 	else
 	{
 		points = get_mm_rss(p->mm);
+		points *= 1000;
+		points /= totalpages;
 	}
 	task_unlock(p);
 
@@ -332,15 +334,24 @@ static struct task_struct *select_bad_process(unsigned int *ppoints,
 
 	*ppoints = 0;
 
-	
+	//TSG: if using modified OOM Killer:
 	if(user != 0 && current_uid() == user && get_current_user()->mem_max != -1)
 	{
+		//totalpages is either total pages or the number of pages comprising mem_max
+		//whichever is smaller
+		unsigned long mem_max_pages = get_current_user()->mem_max / PAGE_SIZE;
+		if (mem_max_pages < totalpages)
+		{
+			totalpages  = mem_max_pages;
+		}
+
 		for_each_process(p)
 		{
 			unsigned int points = 0; 
 			if(p->real_cred->uid == user)
 			{
-				points = get_mm_rss(p->mm); 
+				points = oom_badness(p, memcg, nodemask, totalpages);
+				printk("TSG: process %d has score of %d!!  Mem_max of %lu pages!!\n", p->pid, points, totalpages);
 				if (points > *ppoints)
 				{
 					chosen = p;
@@ -516,19 +527,19 @@ static void oom_kill_process(struct task_struct *p, gfp_t gfp_mask, int order,
 	 if (victim->real_cred->user->mem_max == -1)
 	 {
 	 	do {
-		list_for_each_entry(child, &t->children, sibling) {
-			unsigned int child_points;
+			list_for_each_entry(child, &t->children, sibling) {
+				unsigned int child_points;
 
-			if (child->mm == p->mm)
-				continue;
-			/*
-			 * oom_badness() returns 0 if the thread is unkillable
-			 */
-			child_points = oom_badness(child, memcg, nodemask,
-								totalpages);
-			if (child_points > victim_points) {
-				victim = child;
-				victim_points = child_points;
+				if (child->mm == p->mm)
+					continue;
+				/*
+				 * oom_badness() returns 0 if the thread is unkillable
+				 */
+				child_points = oom_badness(child, memcg, nodemask,
+									totalpages);
+				if (child_points > victim_points) {
+					victim = child;
+					victim_points = child_points;
 			}
 		}
 		} while_each_thread(p, t);
