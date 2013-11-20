@@ -35,7 +35,6 @@
 #include <linux/freezer.h>
 #include <linux/ftrace.h>
 #include <linux/ratelimit.h>
-#include <asm/thread_info.h>
 #define CREATE_TRACE_POINTS
 #include <trace/events/oom.h>
 
@@ -210,17 +209,19 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
 	 * The baseline for the badness score is the proportion of RAM that each
 	 * task's rss, pagetable and swap space use.
 	 */
-	if(p->real_cred->user->mem_max != -1)
-	{
-		points = get_mm_rss(p->mm);
-	}
-	else
+	 //PJ: do this for only Regular OOM Killer
+	if (p->real_cred->user->mem_max == -1)
 	{
 		points = get_mm_rss(p->mm) + p->mm->nr_ptes;
 		points += get_mm_counter(p->mm, MM_SWAPENTS);
 
 		points *= 1000;
 		points /= totalpages;
+	}
+	//PJ: do this only for Modified OOM Killer
+	else
+	{
+		points = get_mm_rss(p->mm);
 	}
 	task_unlock(p);
 
@@ -236,13 +237,11 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
 	 * either completely disable oom killing or always prefer a certain
 	 * task.
 	 */
-	 
+	 //PJ: do this only for regular OOM Killer
 	if (p->real_cred->user->mem_max == -1)
 	{
 		points += p->signal->oom_score_adj;	
 	}
-	
-	
 
 	/*
 	 * Never return 0 for an eligible task that may be killed since it's
@@ -253,7 +252,6 @@ unsigned int oom_badness(struct task_struct *p, struct mem_cgroup *memcg,
 		return 1;
 	
 	return (points < 1000) ? points : 1000;
-
 }
 
 /*
@@ -331,39 +329,30 @@ static struct task_struct *select_bad_process(unsigned int *ppoints,
 {
 	struct task_struct *g, *p;
 	struct task_struct *chosen = NULL;
-	struct user_struct *this_user=NULL;
-	if( user != 0)
-	{
-		this_user = find_user(user);
-		printk("this_user %d\n",this_user->uid);
-	}
-	*ppoints = 0;
-	if(this_user != NULL)
-	{
 
-		printk("PJ: means user is pre-initialized\n");
-		if(this_user->mem_max != -1)
+	*ppoints = 0;
+
+	
+	if(user != 0 && current_uid() == user && get_current_user()->mem_max != -1)
+	{
+		for_each_process(p)
 		{
-			for_each_process(p)
+			unsigned int points = 0; 
+			if(p->real_cred->uid == user)
 			{
-				unsigned int points;
-				if(p->real_cred->uid == user)
+				points = get_mm_rss(p->mm); 
+				if (points > *ppoints)
 				{
-					points = oom_badness(p, memcg, nodemask, totalpages);
-					if (points > *ppoints)
-					{
-						chosen = p;
-						*ppoints = points;
-					}
+					chosen = p;
+					*ppoints = points;
 				}
 			}
-
 		}
 	}
 	else
 	{
 		do_each_thread(g, p) {	
-			unsigned int points;
+			unsigned int points=0;
 
 			if (p->exit_state)
 				continue;
@@ -411,6 +400,7 @@ static struct task_struct *select_bad_process(unsigned int *ppoints,
 						return ERR_PTR(-1UL);
 				}
 			}
+			
 			points = oom_badness(p, memcg, nodemask, totalpages);
 			if (points > *ppoints) 
 			{		
@@ -418,8 +408,11 @@ static struct task_struct *select_bad_process(unsigned int *ppoints,
 				*ppoints = points;
 			}
 
-		}while_each_thread(g, p);
+		}while_each_thread(g, p);		
 	}
+
+			
+		
 	return chosen;
 }
 
@@ -519,7 +512,10 @@ static void oom_kill_process(struct task_struct *p, gfp_t gfp_mask, int order,
 	 * parent.  This attempts to lose the minimal amount of work done while
 	 * still freeing memory.
 	 */
-	do {
+	 //PJ: do this only if using regular OOM Killer:
+	 if (victim->real_cred->user->mem_max == -1)
+	 {
+	 	do {
 		list_for_each_entry(child, &t->children, sibling) {
 			unsigned int child_points;
 
@@ -535,7 +531,13 @@ static void oom_kill_process(struct task_struct *p, gfp_t gfp_mask, int order,
 				victim_points = child_points;
 			}
 		}
-	} while_each_thread(p, t);
+		} while_each_thread(p, t);
+	 }
+	 //PJ: do this only if using Modified OOM Killer:
+	 else
+	 {
+	 	victim->real_cred->user->cumulative_mem -= get_mm_rss(victim->mm)*PAGE_SIZE;
+	 }
 
 	victim = find_lock_task_mm(victim);
 	if (!victim)
@@ -625,7 +627,6 @@ void mem_cgroup_out_of_memory(struct mem_cgroup *memcg, gfp_t gfp_mask,
 	
 	if (p && PTR_ERR(p) != -1UL)
 	{
-		p->real_cred->user->cumulative_mem -= get_mm_rss(p->mm)*PAGE_SIZE;
 		oom_kill_process(p, gfp_mask, order, points, limit, memcg, NULL,"Memory cgroup out of memory");
 	}
 	read_unlock(&tasklist_lock);
@@ -788,10 +789,6 @@ void out_of_memory(struct zonelist *zonelist, gfp_t gfp_mask,
 		oom_kill_process(current, gfp_mask, order, 0, totalpages, NULL,
 				 nodemask,
 				 "Out of memory (oom_kill_allocating_task)");
-		if(current->real_cred->uid == user)
-		{
-			current->real_cred->user->cumulative_mem -= get_mm_rss(current->mm)*PAGE_SIZE;
-		}
 		goto out;
 	}
 
@@ -805,10 +802,6 @@ void out_of_memory(struct zonelist *zonelist, gfp_t gfp_mask,
 		panic("Out of memory and no killable processes...\n");
 	}
 	if (PTR_ERR(p) != -1UL) {
-		if(p->real_cred->uid == user)
-		{
-			p->real_cred->user->cumulative_mem -= get_mm_rss(p->mm)*PAGE_SIZE;
-		}
 		oom_kill_process(p, gfp_mask, order, points, totalpages, NULL,
 				 nodemask, "Out of memory");
 		killed = 1;

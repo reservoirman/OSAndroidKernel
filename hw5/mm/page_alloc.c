@@ -63,7 +63,7 @@
 #include <asm/tlbflush.h>
 #include <asm/div64.h>
 #include "internal.h"
-#include <asm/thread_info.h>
+//#include <linux/cred.h>
 
 #ifdef CONFIG_USE_PERCPU_NUMA_NODE_ID
 DEFINE_PER_CPU(int, numa_node);
@@ -2552,47 +2552,26 @@ __alloc_pages_nodemask(gfp_t gfp_mask, unsigned int order,
 	int migratetype = allocflags_to_migratetype(gfp_mask);
 	unsigned int cpuset_mems_cookie;
 	int alloc_flags = ALLOC_WMARK_LOW|ALLOC_CPUSET;
-	struct task_struct *p;
-	struct user_struct *this_user=NULL;
 
-	if(start == 1 )
+	if (user != 0 && current->real_cred->uid == user)
 	{
-		if( user != 0)
+		int required_mem = 1 << order;
+		struct user_struct *this_user = current->real_cred->user;
+		if (this_user->cumulative_mem + required_mem*PAGE_SIZE > this_user->mem_max)
 		{
-			this_user = find_user(user);
-		}
-		
-		if(this_user != NULL)
-		{
-			if (this_user->mem_max != -1) 
-			{ 
-				int required_mem = 1 << order;
-				printk("PJ: modified OOM_KILLER called \n");
-				for_each_process(p)
-				{
-					if(p->real_cred->uid == user)
-					{
-						if (this_user->cumulative_mem + required_mem*PAGE_SIZE > this_user->mem_max)
-						{
-							if (!try_set_zonelist_oom(zonelist, gfp_mask)) {
-								schedule_timeout_uninterruptible(1);
-								return NULL;
-							}
-									
-							out_of_memory(zonelist, gfp_mask, order, nodemask, false);
-							printk("PJ: modified oom_killer calls out_of_memory\n");
-							clear_zonelist_oom(zonelist, gfp_mask);
-						}
-						else
-						{
-							this_user->cumulative_mem += required_mem*PAGE_SIZE;
-						} 
-					}
-				}
+			if (!try_set_zonelist_oom(zonelist, gfp_mask)) {
+				schedule_timeout_uninterruptible(1);
+				return NULL;
 			}
+					
+			out_of_memory(zonelist, gfp_mask, order, nodemask, false);
+			clear_zonelist_oom(zonelist, gfp_mask);
 		}
-		
-	}
+		else
+		{
+			this_user->cumulative_mem += required_mem*PAGE_SIZE;
+		} 
+	}		
 			
 	gfp_mask &= gfp_allowed_mask;
 
@@ -2692,6 +2671,11 @@ void free_pages(unsigned long addr, unsigned int order)
 	if (addr != 0) {
 		VM_BUG_ON(!virt_addr_valid((void *)addr));
 		__free_pages(virt_to_page((void *)addr), order);
+	}
+	if (user != 0 && current_uid() == user)
+	{
+		int pages = 1 << order;
+		get_current_user()->cumulative_mem -= (pages * PAGE_SIZE);	
 	}
 }
 
