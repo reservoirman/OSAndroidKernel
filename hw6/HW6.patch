@@ -1,0 +1,90 @@
+diff --git a/arch/arm/kernel/calls.S b/arch/arm/kernel/calls.S
+index 463ff4a..54a41fb 100644
+--- a/arch/arm/kernel/calls.S
++++ b/arch/arm/kernel/calls.S
+@@ -387,6 +387,7 @@
+ /* 375 */	CALL(sys_setns)
+ 		CALL(sys_process_vm_readv)
+ 		CALL(sys_process_vm_writev)
++		CALL(sys_ext4_cowcopy)
+ #ifndef syscalls_counted
+ .equ syscalls_padding, ((NR_syscalls + 3) & ~3) - NR_syscalls
+ #define syscalls_counted
+diff --git a/fs/ext4/Makefile b/fs/ext4/Makefile
+index 56fd8f86..4d6c5e1 100644
+--- a/fs/ext4/Makefile
++++ b/fs/ext4/Makefile
+@@ -7,7 +7,7 @@ obj-$(CONFIG_EXT4_FS) += ext4.o
+ ext4-y	:= balloc.o bitmap.o dir.o file.o fsync.o ialloc.o inode.o page-io.o \
+ 		ioctl.o namei.o super.o symlink.o hash.o resize.o extents.o \
+ 		ext4_jbd2.o migrate.o mballoc.o block_validity.o move_extent.o \
+-		mmp.o indirect.o
++		mmp.o indirect.o cowcopy.o
+ 
+ ext4-$(CONFIG_EXT4_FS_XATTR)		+= xattr.o xattr_user.o xattr_trusted.o
+ ext4-$(CONFIG_EXT4_FS_POSIX_ACL)	+= acl.o
+diff --git a/fs/ext4/cowcopy.c b/fs/ext4/cowcopy.c
+new file mode 100644
+index 0000000..a9f3f23
+--- /dev/null
++++ b/fs/ext4/cowcopy.c
+@@ -0,0 +1,58 @@
++#include <linux/fs.h>
++#include <asm-generic/errno-base.h>
++#include <asm-generic/errno.h>
++#include <linux/syscalls.h>
++#include <linux/stat.h>
++#include <linux/fdtable.h>
++
++extern struct files_struct init_files;
++
++asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
++{
++
++	char *tmp_src;
++	char *tmp_dest;
++	int fd_src ;
++	int fd_dest ;
++	tmp_src = getname(src);
++	printk("src is correct : name = %s\n", tmp_src);
++	tmp_dest = getname(dest);
++	printk("dest is correct: name = %s\n", tmp_dest);
++	fd_src = PTR_ERR(tmp_src);
++	printk("src file descriptor is correct. fd_src =  %x \n",fd_src);
++	fd_dest = PTR_ERR(tmp_dest);
++	printk("dest file descriptor is correct. fd_dest =  %x \n",fd_dest);
++	
++	// if src is a directory , return -EPERM
++	if(S_ISDIR(init_files.fd_array[fd_src]->f_dentry->d_inode->i_mode))
++	{
++		printk("src is a directory\n");
++		return (-EPERM);
++	}
++	printk("src is not a directory\n");
++	if(!S_ISREG(init_files.fd_array[fd_src]->f_dentry->d_inode->i_mode))
++	{
++	printk("src is a regular file\n");
++
++		return (-EPERM);
++	}
++
++	printk("src is not a regular file\n");
++	// if src is not in ext4 file system , return -EOPNOTSUPP
++	if(strcmp(init_files.fd_array[fd_src]->f_dentry->d_inode->i_sb->s_type->name,"ext4") != 0)
++	{
++		printk("src does not use ext4\n");
++		return (-EOPNOTSUPP);
++	}
++
++	printk("src uses ext4\n");
++	// if src and dest are not on same device then return  -EXDEV
++	if(init_files.fd_array[fd_src]->f_dentry->d_inode->i_sb != init_files.fd_array[fd_dest]->f_dentry->d_inode->i_sb)
++	{
++		printk("src and dest not on same device\n");
++		return (-EXDEV);
++	}
++	printk("src and dest on same device\n");
++	// lazy copy - create a hard link
++	return 0;
++}
+\ No newline at end of file
