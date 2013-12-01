@@ -5,7 +5,7 @@
 
 int main()
 {
-  int ret = syscall(378, "/data/local/tmp","/data/local/tmp");
+  int ret = syscall(378, "ueventd.rc","ueventd.rc");
   printf("return value :  %d\n", ret );
   return 0;
 }
