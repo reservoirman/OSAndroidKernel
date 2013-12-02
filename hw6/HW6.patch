@@ -25,10 +25,10 @@ index 56fd8f86..4d6c5e1 100644
  ext4-$(CONFIG_EXT4_FS_POSIX_ACL)	+= acl.o
 diff --git a/fs/ext4/cowcopy.c b/fs/ext4/cowcopy.c
 new file mode 100644
-index 0000000..7a1625a
+index 0000000..c7c90fa
 --- /dev/null
 +++ b/fs/ext4/cowcopy.c
-@@ -0,0 +1,111 @@
+@@ -0,0 +1,119 @@
 +#include <linux/fs.h>
 +#include <asm-generic/errno-base.h>
 +#include <asm-generic/errno.h>
@@ -45,6 +45,10 @@ index 0000000..7a1625a
 +extern struct files_struct init_files;
 +extern unsigned int full_name_hash(const unsigned char *name, unsigned int len);
 +
++#define EXT4_XATTR_INDEX_USER			1
++extern int ext4_xattr_set(struct inode *inode, int name_index, const char *name, const void *value, size_t value_len, int flags);
++extern int ext4_xattr_get(struct inode *inode, int name_index, const char *name, void *buffer, size_t buffer_size);
++
 +asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 +{
 +	struct path src_path,dest_path;
@@ -52,8 +56,8 @@ index 0000000..7a1625a
 +	struct inode *src_inode;
 +	int error,result;
 +	int ret;
-+	int testvalue = 1234;
-+	int readtestvalue = 123;
++	int testvalue = 1;
++	int readtestvalue = 0;
 +
 +	error = user_path(src, &src_path);
 +	// error value indicates whether there is any error while opening the file. 0 --> no error. 
@@ -127,10 +131,14 @@ index 0000000..7a1625a
 +			result = vfs_link(src_path.dentry,dest_path.dentry->d_inode,dest_dentry);
 +			printk("hard link creation status : %d \n", result);
 +		}
-+		ret = src_inode->i_op->setxattr(src_path.dentry ,"HOLLA", &testvalue, 5, XATTR_CREATE);
++
++		//ret = src_inode->i_op->setxattr(src_path.dentry ,"HOLLA", &testvalue, 5, XATTR_CREATE);
++
++		ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 3, XATTR_CREATE);
 +		printk("return value: %d\n", ret);
-+		src_inode->i_op->getxattr(src_path.dentry, "HOLLA", &readtestvalue, 5);
-+		printk("This should be 1234: %u\n", readtestvalue);
++		//src_inode->i_op->getxattr(src_path.dentry, "HOLLA", &readtestvalue, 5);
++		ext4_xattr_get(src_inode, EXT4_XATTR_INDEX_USER, "COW", &readtestvalue, 3);
++		printk("This should be 1: %u\n", readtestvalue);
 +
 +	}
 +	else
