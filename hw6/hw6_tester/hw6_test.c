@@ -6,10 +6,11 @@
 
 int main()
 {
- // int fd;
+  int fd;
   int ret;
-  //fd = open("/data/local/tmp/hw5_test.c", O_RDWR);
-  ret = syscall(378, "/data/local/tmp/hw5_test","/data/local/tmp/b");
+  
+  ret = syscall(378, "/data/local/tmp/hw5_test","/data/local/tmp/dest");
   printf("return value :  %d\n", ret );
+  fd = open("/data/local/tmp/hw5_test", O_RDWR);
   return 0;
 }

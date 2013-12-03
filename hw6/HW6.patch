@@ -25,10 +25,10 @@ index 56fd8f86..4d6c5e1 100644
  ext4-$(CONFIG_EXT4_FS_POSIX_ACL)	+= acl.o
 diff --git a/fs/ext4/cowcopy.c b/fs/ext4/cowcopy.c
 new file mode 100644
-index 0000000..c7c90fa
+index 0000000..1589fda
 --- /dev/null
 +++ b/fs/ext4/cowcopy.c
-@@ -0,0 +1,119 @@
+@@ -0,0 +1,120 @@
 +#include <linux/fs.h>
 +#include <asm-generic/errno-base.h>
 +#include <asm-generic/errno.h>
@@ -132,12 +132,13 @@ index 0000000..c7c90fa
 +			printk("hard link creation status : %d \n", result);
 +		}
 +
-+		//ret = src_inode->i_op->setxattr(src_path.dentry ,"HOLLA", &testvalue, 5, XATTR_CREATE);
-+
-+		ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 3, XATTR_CREATE);
++		ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_CREATE);
++		if( ret != 0)
++		{
++			ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_REPLACE);
++		}
 +		printk("return value: %d\n", ret);
-+		//src_inode->i_op->getxattr(src_path.dentry, "HOLLA", &readtestvalue, 5);
-+		ext4_xattr_get(src_inode, EXT4_XATTR_INDEX_USER, "COW", &readtestvalue, 3);
++		ext4_xattr_get(src_inode, EXT4_XATTR_INDEX_USER, "COW", &readtestvalue, 4);
 +		printk("This should be 1: %u\n", readtestvalue);
 +
 +	}
@@ -149,3 +150,51 @@ index 0000000..c7c90fa
 +	return 0;
 +}
 \ No newline at end of file
+diff --git a/fs/ext4/file.c b/fs/ext4/file.c
+index cb70f18..318cf81 100644
+--- a/fs/ext4/file.c
++++ b/fs/ext4/file.c
+@@ -164,8 +164,43 @@ static int ext4_file_open(struct inode * inode, struct file * filp)
+ 	struct ext4_sb_info *sbi = EXT4_SB(inode->i_sb);
+ 	struct ext4_inode_info *ei = EXT4_I(inode);
+ 	struct vfsmount *mnt = filp->f_path.mnt;
++	struct inode *dest_inode;
++	struct dentry *current_dentry;
+ 	struct path path;
+ 	char buf[64], *cp;
++	int cowcopyflag = 0;
++	int resetflag = 0;
++
++	// if( inode -> xattr -> value == 1 && (filp -> flag == O_WRONLY or O_RDWR ) then COW copy file
++	ext4_xattr_get(inode, EXT4_XATTR_INDEX_USER, "COW", &cowcopyflag, 4);
++	if(cowcopyflag == 1 && ( filp->f_flags==O_RDWR || filp->f_flags==O_WRONLY || filp->f_flags==O_APPEND || filp->f_flags==O_TRUNC))
++	{
++		list_for_each_entry(current_dentry,&inode->i_dentry,d_alias)
++		{
++			// alloc inode for new file
++			dest_inode = new_inode(inode->i_sb);
++
++			// unlink from previous inode
++			vfs_unlink(inode,current_dentry);
++
++			// associate inode with the destination
++ 			current_dentry->d_inode = dest_inode;
++
++			// setxattr of both inode to 0
++			ext4_xattr_set(inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_CREATE);
++			ext4_xattr_set(dest_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_CREATE);
++
++			// readpages from src and write to dest ->  and use readpages and write pages  
++			
++		}
++
++	}
++	
++	
++	
++	
++	
++
+ 
+ 	if (unlikely(!(sbi->s_mount_flags & EXT4_MF_MNTDIR_SAMPLED) &&
+ 		     !(sb->s_flags & MS_RDONLY))) {

@@ -101,12 +101,13 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 			printk("hard link creation status : %d \n", result);
 		}
 
-		//ret = src_inode->i_op->setxattr(src_path.dentry ,"HOLLA", &testvalue, 5, XATTR_CREATE);
-
-		ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 3, XATTR_CREATE);
+		ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_CREATE);
+		if( ret != 0)
+		{
+			ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_REPLACE);
+		}
 		printk("return value: %d\n", ret);
-		//src_inode->i_op->getxattr(src_path.dentry, "HOLLA", &readtestvalue, 5);
-		ext4_xattr_get(src_inode, EXT4_XATTR_INDEX_USER, "COW", &readtestvalue, 3);
+		ext4_xattr_get(src_inode, EXT4_XATTR_INDEX_USER, "COW", &readtestvalue, 4);
 		printk("This should be 1: %u\n", readtestvalue);
 
 	}
