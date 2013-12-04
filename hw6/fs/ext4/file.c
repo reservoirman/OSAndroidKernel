@@ -172,54 +172,27 @@ static int ext4_file_open(struct inode * inode, struct file * filp)
 	int ret,ret_unlink;
 	umode_t mode = 0644;
 
-
 	// if( inode -> xattr -> value == 1 && (filp -> flag == O_WRONLY or O_RDWR ) then COW copy file
 	ext4_xattr_get(inode, EXT4_XATTR_INDEX_USER, "COW", &cowcopyflag, 4);
-	
-	if(cowcopyflag == 1 && ( inode->i_flags == O_RDWR || inode->i_flags==O_WRONLY || inode->i_flags==O_APPEND || inode->i_flags==O_TRUNC))
+	if(cowcopyflag == 1 && ( ((filp->f_flags & O_RDWR) == 2) || ( (filp->f_flags & O_WRONLY) == 1 ))) 
 	{
 		printk("file trying to be opened is a COWCOPY file\n");
-		// unlink from previous inode
-		printk("d_count: %d \n", filp->f_path.dentry->d_count);
 
-		mutex_lock_nested(&filp->f_path.dentry->d_parent->d_inode->i_mutex, I_MUTEX_PARENT);
+		// unlink from previous inode
 		ret_unlink= vfs_unlink(filp->f_path.dentry->d_parent->d_inode , filp->f_path.dentry);
 		printk("return for vfs_unlink:%d \n",ret_unlink);
-		filp->f_path.dentry->d_inode = NULL ;
-		//filp->f_path.dentry->d_alias.next = &filp->f_path.dentry->d_alias ;
-		dput(filp->f_path.dentry);
-		mutex_unlock(&filp->f_path.dentry->d_parent->d_inode->i_mutex);
-		//path_put(&filp->f_path);
 
-		//d_delete(filp->f_path.dentry);
-
-		printk("d_count: %d \n", filp->f_path.dentry->d_count);
-		if(filp->f_path.dentry->d_inode == NULL )
-		{
-			printk("d_delete succeded \n");
-		}
-		else
-		{
-			printk("d_delete unsuccessful \n");
-		}
+		filp->f_path.dentry->d_inode = NULL;
+		list_del_init(&filp->f_path.dentry->d_alias);
 		
+
 		// alloc inode for new file
-		mutex_lock(&filp->f_path.dentry->d_parent->d_inode->i_mutex);
 		ret = vfs_create(filp->f_path.dentry->d_parent->d_inode , filp->f_path.dentry , mode , NULL );
 		printk("return value for vfs_create: %d \n", ret);
 
-		
-		
-		
-		mutex_unlock(&filp->f_path.dentry->d_parent->d_inode->i_mutex);
-		
-		// setxattr of both inode to 0
-		ext4_xattr_set(inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_REPLACE);
-		ext4_xattr_set(filp->f_path.dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_REPLACE);
-		dput(filp->f_path.dentry);
-		//path_put(&filp->f_path);
-
-		
+		ext4_xattr_set(inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, 0);
+		ext4_xattr_set(filp->f_path.dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, 0);
+	
 		// readpages from src and write to dest ->  and use readpages and write pages  
 
 	}

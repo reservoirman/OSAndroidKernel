@@ -25,10 +25,10 @@ index 56fd8f86..4d6c5e1 100644
  ext4-$(CONFIG_EXT4_FS_POSIX_ACL)	+= acl.o
 diff --git a/fs/ext4/cowcopy.c b/fs/ext4/cowcopy.c
 new file mode 100644
-index 0000000..4da9492
+index 0000000..3c21cf6
 --- /dev/null
 +++ b/fs/ext4/cowcopy.c
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,100 @@
 +#include <linux/fs.h>
 +#include <asm-generic/errno-base.h>
 +#include <asm-generic/errno.h>
@@ -61,35 +61,29 @@ index 0000000..4da9492
 +	int readtestvalue = 0;
 +
 +	error = user_path(src, &src_path);
++	
 +	// error value indicates whether there is any error while opening the file. 0 --> no error. 
 +	if (error == 0)
 +	{
 +		src_inode = src_path.dentry->d_inode;
-+		printk("The dentry name is %s\n", src_path.dentry->d_name.name);
 +
 +		// if src is a directory , return -EPERM
 +		if(S_ISDIR(src_inode->i_mode))
 +		{
-+			printk("src is a directory\n");
 +			return (-EPERM);
 +		}
-+		printk("src is not a directory\n");
 +		
 +		// if src is not a regular file return -EPERM
 +		if( ! S_ISREG(src_inode->i_mode) )
 +		{
-+			printk("src is not a regular file\n");
 +			return (-EPERM);
 +		}
-+		printk("src is a regular file\n");
 +		
 +		// if src is not in ext4 file system , return -EOPNOTSUPP
 +		if(strcmp(src_inode->i_sb->s_type->name,"ext4") != 0)
 +		{
-+			printk("src does not use ext4. It uses %s \n",src_inode->i_sb->s_type->name );
 +			return (-EOPNOTSUPP);
 +		}
-+		printk("src uses ext4\n");
 +
 +
 +		// if the file is open for writing, then return an EPERM
@@ -99,24 +93,16 @@ index 0000000..4da9492
 +		error = user_path(dest, &dest_path);
 +		if (error == 0)
 +		{	
-+			printk("destination file exists\n");
 +			return (-EEXIST);
 +		}
-+		printk("destination file does not exist, so a COW file can be created\n");
-+
-+		// if src and dest are not on same device then return  -EXDEV
 +		
++		// if src and dest are not on same device then return  -EXDEV
 +		dest_dentry = user_path_create(-1, dest, &dest_path, 0);
-+		printk("dest_path: %s \n ", dest_path.dentry->d_name.name);
-+		printk("dest_dentry : %s \n", dest_dentry->d_name.name);
 +		if(src_path.mnt != dest_path.mnt)
 +		{
-+			printk("src device and dest not on same device\n");
 +			return (-EXDEV);
 +		}
-+		printk("src and dest on same device\n");
-+		
-+
++	
 +		// lazy copy - create a hard link
 +		result = vfs_link(src_path.dentry,dest_path.dentry->d_inode,dest_dentry);
 +		printk("hard link creation status : %d \n", result);
@@ -125,17 +111,12 @@ index 0000000..4da9492
 +		mutex_unlock(&dest_path.dentry->d_inode->i_mutex);
 +		path_put(&dest_path);
 +		path_put(&src_path);
-+		
++
++
 +		if(result == 0 )
 +		{
-+			ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_CREATE);
-+			if( ret != 0)
-+			{
-+				ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_REPLACE);
-+			}
++			ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, 0);
 +			printk("ext4_xattr_set return value: %d\n", ret);
-+			ext4_xattr_get(src_inode, EXT4_XATTR_INDEX_USER, "COW", &readtestvalue, 4);
-+			printk("This should be 1: %u\n", readtestvalue);
 +		}
 +		else
 +		{
@@ -144,17 +125,16 @@ index 0000000..4da9492
 +	}
 +	else
 +	{
-+		printk("source file doesnt exist\n" );
 +		return -1;
 +	}
 +	return 0;
 +}
 \ No newline at end of file
 diff --git a/fs/ext4/file.c b/fs/ext4/file.c
-index cb70f18..4803b82 100644
+index cb70f18..aa8d9fa 100644
 --- a/fs/ext4/file.c
 +++ b/fs/ext4/file.c
-@@ -165,7 +165,64 @@ static int ext4_file_open(struct inode * inode, struct file * filp)
+@@ -165,7 +165,37 @@ static int ext4_file_open(struct inode * inode, struct file * filp)
  	struct ext4_inode_info *ei = EXT4_I(inode);
  	struct vfsmount *mnt = filp->f_path.mnt;
  	struct path path;
@@ -165,54 +145,27 @@ index cb70f18..4803b82 100644
 +	int ret,ret_unlink;
 +	umode_t mode = 0644;
 +
-+
 +	// if( inode -> xattr -> value == 1 && (filp -> flag == O_WRONLY or O_RDWR ) then COW copy file
 +	ext4_xattr_get(inode, EXT4_XATTR_INDEX_USER, "COW", &cowcopyflag, 4);
-+	
-+	if(cowcopyflag == 1 && ( inode->i_flags == O_RDWR || inode->i_flags==O_WRONLY || inode->i_flags==O_APPEND || inode->i_flags==O_TRUNC))
++	if(cowcopyflag == 1 && ( ((filp->f_flags & O_RDWR) == 2) || ( (filp->f_flags & O_WRONLY) == 1 ))) 
 +	{
 +		printk("file trying to be opened is a COWCOPY file\n");
-+		// unlink from previous inode
-+		printk("d_count: %d \n", filp->f_path.dentry->d_count);
 +
-+		mutex_lock_nested(&filp->f_path.dentry->d_parent->d_inode->i_mutex, I_MUTEX_PARENT);
++		// unlink from previous inode
 +		ret_unlink= vfs_unlink(filp->f_path.dentry->d_parent->d_inode , filp->f_path.dentry);
 +		printk("return for vfs_unlink:%d \n",ret_unlink);
-+		filp->f_path.dentry->d_inode = NULL ;
-+		//filp->f_path.dentry->d_alias.next = &filp->f_path.dentry->d_alias ;
-+		dput(filp->f_path.dentry);
-+		mutex_unlock(&filp->f_path.dentry->d_parent->d_inode->i_mutex);
-+		//path_put(&filp->f_path);
 +
-+		//d_delete(filp->f_path.dentry);
-+
-+		printk("d_count: %d \n", filp->f_path.dentry->d_count);
-+		if(filp->f_path.dentry->d_inode == NULL )
-+		{
-+			printk("d_delete succeded \n");
-+		}
-+		else
-+		{
-+			printk("d_delete unsuccessful \n");
-+		}
++		filp->f_path.dentry->d_inode = NULL;
++		list_del_init(&filp->f_path.dentry->d_alias);
 +		
++
 +		// alloc inode for new file
-+		mutex_lock(&filp->f_path.dentry->d_parent->d_inode->i_mutex);
 +		ret = vfs_create(filp->f_path.dentry->d_parent->d_inode , filp->f_path.dentry , mode , NULL );
 +		printk("return value for vfs_create: %d \n", ret);
 +
-+		
-+		
-+		
-+		mutex_unlock(&filp->f_path.dentry->d_parent->d_inode->i_mutex);
-+		
-+		// setxattr of both inode to 0
-+		ext4_xattr_set(inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_REPLACE);
-+		ext4_xattr_set(filp->f_path.dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_REPLACE);
-+		dput(filp->f_path.dentry);
-+		//path_put(&filp->f_path);
-+
-+		
++		ext4_xattr_set(inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, 0);
++		ext4_xattr_set(filp->f_path.dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, 0);
++	
 +		// readpages from src and write to dest ->  and use readpages and write pages  
 +
 +	}

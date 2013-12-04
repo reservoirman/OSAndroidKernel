@@ -30,35 +30,29 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 	int readtestvalue = 0;
 
 	error = user_path(src, &src_path);
+	
 	// error value indicates whether there is any error while opening the file. 0 --> no error. 
 	if (error == 0)
 	{
 		src_inode = src_path.dentry->d_inode;
-		printk("The dentry name is %s\n", src_path.dentry->d_name.name);
 
 		// if src is a directory , return -EPERM
 		if(S_ISDIR(src_inode->i_mode))
 		{
-			printk("src is a directory\n");
 			return (-EPERM);
 		}
-		printk("src is not a directory\n");
 		
 		// if src is not a regular file return -EPERM
 		if( ! S_ISREG(src_inode->i_mode) )
 		{
-			printk("src is not a regular file\n");
 			return (-EPERM);
 		}
-		printk("src is a regular file\n");
 		
 		// if src is not in ext4 file system , return -EOPNOTSUPP
 		if(strcmp(src_inode->i_sb->s_type->name,"ext4") != 0)
 		{
-			printk("src does not use ext4. It uses %s \n",src_inode->i_sb->s_type->name );
 			return (-EOPNOTSUPP);
 		}
-		printk("src uses ext4\n");
 
 
 		// if the file is open for writing, then return an EPERM
@@ -68,24 +62,16 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 		error = user_path(dest, &dest_path);
 		if (error == 0)
 		{	
-			printk("destination file exists\n");
 			return (-EEXIST);
 		}
-		printk("destination file does not exist, so a COW file can be created\n");
-
-		// if src and dest are not on same device then return  -EXDEV
 		
+		// if src and dest are not on same device then return  -EXDEV
 		dest_dentry = user_path_create(-1, dest, &dest_path, 0);
-		printk("dest_path: %s \n ", dest_path.dentry->d_name.name);
-		printk("dest_dentry : %s \n", dest_dentry->d_name.name);
 		if(src_path.mnt != dest_path.mnt)
 		{
-			printk("src device and dest not on same device\n");
 			return (-EXDEV);
 		}
-		printk("src and dest on same device\n");
-		
-
+	
 		// lazy copy - create a hard link
 		result = vfs_link(src_path.dentry,dest_path.dentry->d_inode,dest_dentry);
 		printk("hard link creation status : %d \n", result);
@@ -94,17 +80,12 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 		mutex_unlock(&dest_path.dentry->d_inode->i_mutex);
 		path_put(&dest_path);
 		path_put(&src_path);
-		
+
+
 		if(result == 0 )
 		{
-			ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_CREATE);
-			if( ret != 0)
-			{
-				ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_REPLACE);
-			}
+			ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, 0);
 			printk("ext4_xattr_set return value: %d\n", ret);
-			ext4_xattr_get(src_inode, EXT4_XATTR_INDEX_USER, "COW", &readtestvalue, 4);
-			printk("This should be 1: %u\n", readtestvalue);
 		}
 		else
 		{
@@ -113,7 +94,6 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 	}
 	else
 	{
-		printk("source file doesnt exist\n" );
 		return -1;
 	}
 	return 0;
