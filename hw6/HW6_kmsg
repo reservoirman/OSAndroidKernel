@@ -1,0 +1,1613 @@
+<6>[    0.000000] Booting Linux on physical CPU 0
+<6>[    0.000000] Initializing cgroup subsys cpu
+<5>[    0.000000] Linux version 3.4.0-g46120e4-dirty (w4118@ubuntu) (gcc version 4.6.x-google 20120106 (prerelease) (GCC) ) #135 SMP PREEMPT Wed Dec 4 02:16:40 AST 2013
+<4>[    0.000000] CPU: ARMv7 Processor [511f06f0] revision 0 (ARMv7), cr=10c5387d
+<4>[    0.000000] CPU: PIPT / VIPT nonaliasing data cache, PIPT instruction cache
+<4>[    0.000000] Machine: QCT APQ8064 FLO
+<2>[    0.000000] Truncating memory at 0x90000000 to fit in 32-bit physical address space
+<6>[    0.000000] memory pool 3 (start fe9ff000 size 1600000) initialized
+<6>[    0.000000] Initialized persistent memory from 88d00000-88dfffff
+<6>[    0.000000] cma: CMA: reserved 16 MiB at af800000
+<4>[    0.000000] Memory policy: ECC disabled, Data cache writealloc
+<6>[    0.000000] socinfo_init: v7, id=172, ver=2.0, raw_id=2289, raw_ver=2289, hw_plat=8, hw_plat_ver=65536
+<6>[    0.000000]  accessory_chip=0, hw_plat_subtype=0, pmic_model=18, pmic_die_revision=4
+<7>[    0.000000] On node 0 totalpages: 486399
+<7>[    0.000000]   Normal zone: 1556 pages used for memmap
+<7>[    0.000000]   Normal zone: 0 pages reserved
+<7>[    0.000000]   Normal zone: 165868 pages, LIFO batch:31
+<7>[    0.000000]   HighMem zone: 2536 pages used for memmap
+<7>[    0.000000]   HighMem zone: 316439 pages, LIFO batch:31
+<6>[    0.000000] allocating 44236800 bytes at c2463000 (82663000 physical) for fb
+<6>[    0.000000] PERCPU: Embedded 7 pages/cpu @c4e96000 s15552 r0 d13120 u32768
+<7>[    0.000000] pcpu-alloc: s15552 r0 d13120 u32768 alloc=8*4096
+<7>[    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 
+<4>[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 482307
+<5>[    0.000000] Kernel command line: androidboot.hardware=flo user_debug=31 msm_rtb.filter=0x3F ehci-hcd.park=3 androidboot.emmc=true androidboot.serialno=04c47f2c bootreason=Reboot fuse_info=Y androidboot.baseband=apq asustek.hw_rev=rev_e androidboot.bootloader=FLO-03.05
+<6>[    0.000000] HW Revision: ASUSTek input rev_e 
+<6>[    0.000000] HW Revision: ASUSTek matched rev_e 
+<6>[    0.000000] PID hash table entries: 4096 (order: 2, 16384 bytes)
+<6>[    0.000000] Dentry cache hash table entries: 131072 (order: 7, 524288 bytes)
+<6>[    0.000000] Inode-cache hash table entries: 65536 (order: 6, 262144 bytes)
+<6>[    0.000000] Memory: 140MB 58MB 4MB 7MB 254MB 1436MB = 1899MB total
+<5>[    0.000000] Memory: 1848724k/1952148k available, 96872k reserved, 1275900K highmem
+<5>[    0.000000] Virtual kernel memory layout:
+<5>[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+<5>[    0.000000]     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)
+<5>[    0.000000]     vmalloc : 0xf0000000 - 0xff000000   ( 240 MB)
+<5>[    0.000000]     lowmem  : 0xc0000000 - 0xef800000   ( 760 MB)
+<5>[    0.000000]     pkmap   : 0xbfe00000 - 0xc0000000   (   2 MB)
+<5>[    0.000000]       .text : 0xc0008000 - 0xc0c986a4   (12866 kB)
+<5>[    0.000000]       .init : 0xc0d00000 - 0xc0e03cc0   (1040 kB)
+<5>[    0.000000]       .data : 0xc0e04000 - 0xc0f56528   (1354 kB)
+<5>[    0.000000]        .bss : 0xc0f5654c - 0xc12402d4   (2984 kB)
+<6>[    0.000000] SLUB: Genslabs=11, HWalign=64, Order=0-3, MinObjects=0, CPUs=4, Nodes=1
+<6>[    0.000000] Preemptible hierarchical RCU implementation.
+<6>[    0.000000] NR_IRQS:1177
+<6>[    0.000000] sched_clock: 32 bits at 32kHz, resolution 30517ns, wraps every 131071999ms
+<6>[    0.000000] Console: colour dummy device 80x30
+<6>[    0.000000] console [tty0] enabled
+<6>[    0.150238] Calibrating delay using timer specific routine.. 13.53 BogoMIPS (lpj=67668)
+<6>[    0.150299] pid_max: default: 32768 minimum: 301
+<6>[    0.150604] Security Framework initialized
+<6>[    0.150665] SELinux:  Initializing.
+<7>[    0.150756] SELinux:  Starting in permissive mode
+<6>[    0.150878] Mount-cache hash table entries: 512
+<6>[    0.152465] Initializing cgroup subsys debug
+<6>[    0.152465] Initializing cgroup subsys cpuacct
+<6>[    0.152496] Initializing cgroup subsys freezer
+<6>[    0.152557] CPU: Testing write buffer coherency: ok
+<6>[    0.152954] CPU0: thread -1, cpu 0, socket 0, mpidr 80000000
+<6>[    0.152984] hw perfevents: enabled with ARMv7 Krait PMU driver, 5 counters available
+<6>[    0.153076] Setting up static identity map for 0x80af41a0 - 0x80af4228
+<6>[    0.155609] CPU1: thread -1, cpu 1, socket 0, mpidr 80000001
+<6>[    0.157409] CPU2: thread -1, cpu 2, socket 0, mpidr 80000002
+<6>[    0.159240] CPU3: thread -1, cpu 3, socket 0, mpidr 80000003
+<6>[    0.159393] Brought up 4 CPUs
+<6>[    0.159454] SMP: Total of 4 processors activated (54.13 BogoMIPS).
+<6>[    0.175354] dummy: 
+<6>[    0.176940] NET: Registered protocol family 16
+<6>[    0.183593] DMA: preallocated 1792 KiB pool for atomic coherent allocations
+<3>[    0.184082] AXI: msm_bus_fabric_init_driver(): msm_bus_fabric_init_driver
+<5>[    0.188140] MIDR      = 0x511f06f0
+<6>[    0.188232] meminfo_init: smem ram ptable found: ver: 0 len: 5
+<6>[    0.188262] Found 1 memory banks grouped into 8 memory regions
+<6>[    0.188659] gpiochip_add: registered GPIOs 0 to 151 on device: msmgpio
+<6>[    0.189758] socinfo_init: v7, id=172, ver=2.0, raw_id=2289, raw_ver=2289, hw_plat=8, hw_plat_ver=65536
+<6>[    0.189788]  accessory_chip=0, hw_plat_subtype=0, pmic_model=18, pmic_die_revision=4
+<6>[    0.189910] msm_rpm_init: RPM firmware 3.0.16842936
+<3>[    0.211486] msm_rpm_get_status(): Status id 433 not defined for target
+<3>[    0.211517] msm_rpm_get_status(): Status id 433 not defined for target
+<3>[    0.211547] msm_rpm_get_status(): Status id 433 not defined for target
+<3>[    0.211578] msm_rpm_get_status(): Status id 433 not defined for target
+<3>[    0.211578] msm_rpm_get_status(): Status id 433 not defined for target
+<3>[    0.211608] msm_rpm_get_status(): Status id 433 not defined for target
+<3>[    0.211639] msm_rpm_get_status(): Status id 433 not defined for target
+<3>[    0.211669] msm_rpm_get_status(): Status id 433 not defined for target
+<6>[    0.229461] ASUSTek: Bypassing PCB_ID3
+<6>[    0.229522] ASUSTek: PCBID=043
+<6>[    0.230590] gpio_vreg_probe: id=203, name=ext_mpp8, gpio=203, gpio_label=ext_mpp8_en
+<6>[    0.230865] pm8921_probe: PMIC revision 1: F4
+<6>[    0.230895] pm8921_probe: PMIC revision 2: 06
+<6>[    0.230926] pm8921_probe: PMIC version: PM8921 rev 3.0
+<6>[    0.230926] pm8921_probe: PMIC Restart Reason: Triggered from KPD (power key press)
+<6>[    0.232177] gpiochip_add: registered GPIOs 152 to 195 on device: pm-gpio
+<6>[    0.232696] pm_gpio_probe: OK: base=152, ngpio=44
+<6>[    0.233001] gpiochip_add: registered GPIOs 196 to 207 on device: pm8xxx-mpp
+<6>[    0.233093] pm8xxx_mpp_probe: OK: base=196, ngpio=12
+<6>[    0.234924] pm8821_probe: PMIC revision 1: PM8821 rev F3
+<6>[    0.234954] pm8821_probe: PMIC revision 2: PM8821 rev 0B
+<6>[    0.234985] pm8821_probe: PMIC version: PM8821 ver 2.1
+<6>[    0.235626] gpiochip_add: registered GPIOs 208 to 211 on device: pm8xxx-mpp
+<6>[    0.235687] pm8xxx_mpp_probe: OK: base=208, ngpio=4
+<3>[    0.235992] gpio_vreg_probe: gpio_label required.
+<4>[    0.236022] msm-gpio-regulator: probe of msm-gpio-regulator.174 failed with error -22
+<6>[    0.237274] saw_probe: id=0, name=8921_s5
+<6>[    0.237640] saw_probe: id=1, name=8921_s6
+<6>[    0.238006] saw_probe: id=2, name=8821_s0
+<6>[    0.238372] saw_probe: id=3, name=8821_s1
+<3>[    0.246490] Sensors:DSPS: initial dsps.
+<4>[    0.247528] [ELAN] Touch dirver register
+<6>[    0.247924] persistent_ram: found existing buffer, size 83972, start 83972
+<6>[    0.494415] console [ram-1] enabled
+<4>[    0.495086] apq8064_init_fb: lcd_type=0
+<6>[    0.495300] apq8064_init_fb: register mipi_JDI_panel_device
+<3>[    0.496734] msm_gpiomux_install: write failure: -22
+<3>[    0.496826] msm_gpiomux_install: write failure: -22
+<3>[    0.496917] msm_gpiomux_install: write failure: -22
+<3>[    0.497100] msm_gpiomux_install: write failure: -22
+<3>[    0.497192] msm_gpiomux_install: write failure: -22
+<3>[    0.497375] msm_gpiomux_install: write failure: -22
+<6>[    0.498291] Registering gpio keys
+<6>[    0.498382] Reconfigure VOL_UP(GPIO155) and VOL_DOWN(GPIO189) with PMIC
+<4>[    0.498687] 8921_l17: Failed to create debugfs directory
+<4>[    0.500549] ------------[ cut here ]------------
+<4>[    0.500762] WARNING: at arch/arm/mach-msm/subsystem_restart.c:573 subsys_restart_init+0xd8/0x104()
+<4>[    0.500976] [<c001474c>] (unwind_backtrace+0x0/0x11c) from [<c0078740>] (warn_slowpath_common+0x48/0x60)
+<4>[    0.501098] [<c0078740>] (warn_slowpath_common+0x48/0x60) from [<c0078810>] (warn_slowpath_null+0x18/0x1c)
+<4>[    0.501281] [<c0078810>] (warn_slowpath_null+0x18/0x1c) from [<c0d0c0dc>] (subsys_restart_init+0xd8/0x104)
+<4>[    0.501495] [<c0d0c0dc>] (subsys_restart_init+0xd8/0x104) from [<c0d009ac>] (do_one_initcall+0x90/0x160)
+<4>[    0.501678] [<c0d009ac>] (do_one_initcall+0x90/0x160) from [<c0d00b64>] (kernel_init+0xe8/0x1a4)
+<4>[    0.501892] [<c0d00b64>] (kernel_init+0xe8/0x1a4) from [<c000f3a8>] (kernel_thread_exit+0x0/0x8)
+<4>[    0.502105] ---[ end trace da227214a82491b7 ]---
+<6>[    0.506317] sps:BAM 0x12244000 enabled: ver:0x5, number of pipes:20
+<6>[    0.506469] sps:BAM 0x12244000 is registered.
+<6>[    0.507080] sps:sps is ready.
+<6>[    0.538940] bio: create slab <bio-0> at 0
+<6>[    0.539764] vgaarb: loaded
+<6>[    0.540039] ION heap vmalloc created
+<6>[    0.540161] ION heap mm created at a0000000 with size 4c00000
+<6>[    0.540374] ION heap mm_fw created at 9fe00000 with size 1e0000
+<6>[    0.540496] ION heap mfc created at a4c00000 with size 2000
+<6>[    0.540679] ION heap iommu created
+<6>[    0.540832] ION heap qsecom created at fea07000 with size 780000
+<6>[    0.540985] ION heap audio created at ff187000 with size 4cf000
+<5>[    0.542327] pm8xxx_pwm_probe: OK
+<5>[    0.543090] SCSI subsystem initialized
+<6>[    0.543609] sps:BAM 0x28084000 enabled: ver:0x12, number of pipes:31
+<6>[    0.543701] sps:BAM 0x28084000 is registered.
+<6>[    0.547546] usbcore: registered new interface driver usbfs
+<6>[    0.547821] usbcore: registered new interface driver hub
+<6>[    0.548065] usbcore: registered new device driver usb
+<6>[    0.548309] Linux media interface: v0.10
+<6>[    0.548431] Linux video capture interface: v2.00
+<7>[    0.549072] Registered led device: white
+<6>[    0.549865] apq8064_pm8921_pwm_init+
+<6>[    0.550018] apq8064_pm8921_pwm_init-
+<6>[    0.550872] msm_iommu_dev: device vpe mapped at f0400000, with 2 ctx banks
+<6>[    0.551177] msm_iommu_dev: device mdp0 mapped at f0600000, with 2 ctx banks
+<6>[    0.551452] msm_iommu_dev: device mdp1 mapped at f0800000, with 2 ctx banks
+<6>[    0.551696] msm_iommu_dev: device rot mapped at f0a00000, with 2 ctx banks
+<6>[    0.552001] msm_iommu_dev: device ijpeg mapped at f0c00000, with 2 ctx banks
+<6>[    0.552215] msm_iommu_dev: device vfe mapped at f0e00000, with 2 ctx banks
+<6>[    0.552490] msm_iommu_dev: device vcodec_a mapped at f1000000, with 2 ctx banks
+<6>[    0.552795] msm_iommu_dev: device vcodec_b mapped at f1200000, with 2 ctx banks
+<6>[    0.553039] msm_iommu_dev: device gfx3d mapped at f1400000, with 3 ctx banks
+<6>[    0.553314] msm_iommu_dev: device jpegd mapped at f1600000, with 2 ctx banks
+<6>[    0.553619] msm_iommu_dev: device gfx3d1 mapped at f1800000, with 3 ctx banks
+<6>[    0.553833] msm_iommu_dev: device vcap mapped at f1a00000, with 2 ctx banks
+<6>[    0.554412] msm_iommu_ctx msm_iommu_ctx.2: context vpe_src using bank 0
+<6>[    0.554656] msm_iommu_ctx msm_iommu_ctx.3: context vpe_dst using bank 1
+<6>[    0.555023] msm_iommu_ctx msm_iommu_ctx.4: context mdp_port0_cb0 using bank 0
+<6>[    0.555358] msm_iommu_ctx msm_iommu_ctx.5: context mdp_port0_cb1 using bank 1
+<6>[    0.555603] msm_iommu_ctx msm_iommu_ctx.6: context mdp_port1_cb0 using bank 0
+<6>[    0.555938] msm_iommu_ctx msm_iommu_ctx.7: context mdp_port1_cb1 using bank 1
+<6>[    0.556274] msm_iommu_ctx msm_iommu_ctx.8: context rot_src using bank 0
+<6>[    0.556518] msm_iommu_ctx msm_iommu_ctx.9: context rot_dst using bank 1
+<6>[    0.556823] msm_iommu_ctx msm_iommu_ctx.10: context ijpeg_src using bank 0
+<6>[    0.557037] msm_iommu_ctx msm_iommu_ctx.11: context ijpeg_dst using bank 1
+<6>[    0.557373] msm_iommu_ctx msm_iommu_ctx.12: context vfe_imgwr using bank 0
+<6>[    0.557678] msm_iommu_ctx msm_iommu_ctx.13: context vfe_misc using bank 1
+<6>[    0.557922] msm_iommu_ctx msm_iommu_ctx.14: context vcodec_a_stream using bank 0
+<6>[    0.558258] msm_iommu_ctx msm_iommu_ctx.15: context vcodec_a_mm1 using bank 1
+<6>[    0.558563] msm_iommu_ctx msm_iommu_ctx.16: context vcodec_b_mm2 using bank 0
+<6>[    0.558959] msm_iommu_ctx msm_iommu_ctx.17: context gfx3d_user using bank 0
+<6>[    0.559326] msm_iommu_ctx msm_iommu_ctx.18: context gfx3d_priv using bank 1
+<6>[    0.559570] msm_iommu_ctx msm_iommu_ctx.0: context jpegd_src using bank 0
+<6>[    0.559875] msm_iommu_ctx msm_iommu_ctx.1: context jpegd_dst using bank 1
+<6>[    0.560211] msm_iommu_ctx msm_iommu_ctx.19: context gfx3d1_user using bank 0
+<6>[    0.560577] msm_iommu_ctx msm_iommu_ctx.20: context gfx3d1_priv using bank 1
+<6>[    0.560913] msm_iommu_ctx msm_iommu_ctx.21: context vcap_vc using bank 0
+<6>[    0.561126] msm_iommu_ctx msm_iommu_ctx.22: context vcap_vp using bank 1
+<6>[    0.561431] Advanced Linux Sound Architecture Driver Version 1.0.25.
+<6>[    0.562164] Bluetooth: Core ver 2.16
+<6>[    0.562377] NET: Registered protocol family 31
+<6>[    0.562469] Bluetooth: HCI device and connection manager initialized
+<6>[    0.562652] Bluetooth: HCI socket layer initialized
+<6>[    0.562744] Bluetooth: L2CAP socket layer initialized
+<6>[    0.563171] Bluetooth: SCO socket layer initialized
+<6>[    0.563598] cfg80211: Calling CRDA to update world regulatory domain
+<6>[    0.563781] cfg80211: World regulatory domain updated:
+<6>[    0.563903] cfg80211:   (start_freq - end_freq @ bandwidth), (max_antenna_gain, max_eirp)
+<6>[    0.564056] cfg80211:   (2402000 KHz - 2472000 KHz @ 40000 KHz), (300 mBi, 2000 mBm)
+<6>[    0.564178] cfg80211:   (2457000 KHz - 2482000 KHz @ 40000 KHz), (300 mBi, 2000 mBm)
+<6>[    0.564361] cfg80211:   (2474000 KHz - 2494000 KHz @ 20000 KHz), (300 mBi, 2000 mBm)
+<6>[    0.564514] cfg80211:   (5170000 KHz - 5250000 KHz @ 40000 KHz), (300 mBi, 2000 mBm)
+<6>[    0.564697] cfg80211:   (5735000 KHz - 5835000 KHz @ 40000 KHz), (300 mBi, 2000 mBm)
+<6>[    0.565765] Switching to clocksource gp_timer
+<6>[    0.602844] NET: Registered protocol family 2
+<6>[    0.603271] IP route cache hash table entries: 32768 (order: 5, 131072 bytes)
+<6>[    0.604034] TCP established hash table entries: 131072 (order: 8, 1048576 bytes)
+<6>[    0.605316] TCP bind hash table entries: 65536 (order: 7, 524288 bytes)
+<6>[    0.606170] TCP: Hash tables configured (established 131072 bind 65536)
+<6>[    0.606292] TCP: reno registered
+<6>[    0.606506] UDP hash table entries: 512 (order: 2, 16384 bytes)
+<6>[    0.606628] UDP-Lite hash table entries: 512 (order: 2, 16384 bytes)
+<6>[    0.607208] NET: Registered protocol family 1
+<6>[    0.607757] RPC: Registered named UNIX socket transport module.
+<6>[    0.607940] RPC: Registered udp transport module.
+<6>[    0.608062] RPC: Registered tcp transport module.
+<6>[    0.608215] RPC: Registered tcp NFSv4.1 backchannel transport module.
+<7>[    0.608337] PCI: CLS 0 bytes, default 64
+<6>[    0.608642] Trying to unpack rootfs image as initramfs...
+<6>[    0.635437] Freeing initrd memory: 392K
+<6>[    0.637115] Detected 9 counters on the L2CC PMU.
+<6>[    0.638732] pil_qdsp6v4 pil_qdsp6v4.0: using secure boot
+<6>[    0.640258] pil_riva pil_riva: using secure boot
+<6>[    0.642700] pil_dsps pil_dsps: using secure boot
+<6>[    0.643981] pil_gss pil_gss: using secure boot
+<3>[    0.651672] smd_channel_probe_worker: allocation table not initialized
+<6>[    0.654907] msm_dsps driver version 4.03.
+<6>[    0.657165] NET: Registered protocol family 27
+<1>[    0.661132] dma_test_init, minor number 97
+<6>[    0.661712] lpass_fatal_init: lpass SSR driver init'ed.
+<6>[    0.662078] wcnss_8960: module initialized
+<6>[    0.662750] gss_8064_init: gss fatal driver init'ed.
+<6>[    0.663604] acpuclk-8064 acpuclk-8064: SPEED BIN: 14
+<6>[    0.663787] acpuclk-8064 acpuclk-8064: ACPU PVS: 3
+<6>[    0.666625] acpuclk-8064 acpuclk-8064: CPU0: 12 frequencies supported
+<6>[    0.666748] acpuclk-8064 acpuclk-8064: CPU1: 12 frequencies supported
+<6>[    0.666931] acpuclk-8064 acpuclk-8064: CPU2: 12 frequencies supported
+<6>[    0.667114] acpuclk-8064 acpuclk-8064: CPU3: 12 frequencies supported
+<5>[    0.669769] msm_rpm_log_probe: OK
+<6>[    0.672943] usbcore: registered new interface driver hsic_sysmon
+<6>[    0.673522] audit: initializing netlink socket (disabled)
+<5>[    0.673675] type=2000 audit(0.660:1): initialized
+<4>[    0.675262] highmem bounce pool size: 64 pages
+<5>[    0.684783] NFS: Registering the id_resolver key type
+<6>[    0.686370] fuse init (API version 7.18)
+<6>[    0.686828] msgmni has been set to 1151
+<7>[    0.687011] SELinux:  Registering netfilter hooks
+<6>[    0.690887] Block layer SCSI generic (bsg) driver version 0.4 loaded (major 248)
+<6>[    0.691253] io scheduler noop registered
+<6>[    0.691467] io scheduler deadline registered
+<6>[    0.692199] io scheduler cfq registered (default)
+<6>[    0.692413] io scheduler test-iosched registered
+<6>[    0.697143] mipi_dsi base phy_addr = 0x4700000 virt = 0xf1c00000
+<6>[    0.697418] mmss_sfpb  base phy_addr = 0x5700000,virt = 0xf00fc000
+<6>[    0.698059] mipi_JDI_1080P_pt_init+
+<6>[    0.698608] mipi_JDI_lcd_probe+
+<6>[    0.698822] mipi_JDI_lcd_probe, hw_revision=0
+<6>[    0.699188] mipi_JDI_lcd_probe, lcd_pwm_type=0
+<6>[    0.699920] mipi_JDI_lcd_probe+
+<6>[    0.700134] mipi_JDI_lcd_probe, hw_revision=0
+<6>[    0.700500] mipi_JDI_lcd_probe, lcd_pwm_type=0
+<6>[    0.700714] setting pdata->panel_info.fb_num to 3. type: 9
+<6>[    0.715148] FrameBuffer[0] 1200x1920 size=28016640 bytes is registered successfully!
+<7>[    0.715850] Registered led device: lcd-backlight
+<6>[    0.716003] mipi_JDI_lcd_probe-
+<6>[    0.716125] mipi_JDI_1080P_pt_init-
+<6>[    0.717651] setting pdata->panel_info.fb_num to 1. type: 7
+<6>[    0.720611] FrameBuffer[1] 1920x1080 size=0 bytes is registered successfully!
+<6>[    0.721221] mdp4_dtv_vsync_init: ndx=0
+<3>[    0.721466] hdmi_msm hdmi_msm.1: external_common_state_create: sysfs group ede8f408
+<7>[    0.721679] EXT_COMMON: external_common_state_create: kobject_uevent(KOBJ_ADD)
+<6>[    0.721710] hdmi_msm hdmi_msm.1: hdmi_msm_config_hdcp_feature: HDCP Feature: Enabled
+<6>[    0.723236] 
+<6>[    0.723236]  msm_vidc_enc: Inside vid_enc_init()
+<6>[    0.723663] 
+<6>[    0.723663]  msm_vidc_enc: Inside vid_enc_vcd_init()
+<6>[    0.725341] msm_serial_hs module loaded
+<6>[    0.725799] msm_serial_hsl: detected port #1
+<6>[    0.726074] msm_serial_hsl.1: ttyHSL1 at MMIO 0x12450000 (irq = 225) is a MSM
+<6>[    0.726531] msm_serial_hsl: detected port #0
+<6>[    0.726776] msm_serial_hsl.0: ttyHSL0 at MMIO 0x16640000 (irq = 190) is a MSM
+<6>[    0.727233] msm_serial_hsl: driver initialized
+<6>[    0.728942] msm_rotator_probe: rotator_hw_revision=2
+<6>[    0.732543] diagchar initialized now
+<6>[    0.738311] kgsl kgsl-3d0: |kgsl_iommu_init| MMU type set for device is IOMMU
+<6>[    0.749267] brd: module loaded
+<6>[    0.753631] loop: module loaded
+<6>[    0.756195] anx7808 init gpio
+<6>[    0.826232] sp_tx_hardware_poweron: anx7808 power on
+<6>[    0.833099] ANX7808 is found.
+<5>[    0.834411] 3.3V output disabled
+<6>[    0.886260] sp_tx_hardware_powerdown: anx7808 power down
+<5>[    0.886352] SP_TX To System State: 
+<5>[    0.886474] STATE_CABLE_PLUG
+<6>[    0.887115] tabla-slim tabla-slim: Platform data from board file
+<3>[    1.046936] wcd9xxx_slim_probe: failed to get slimbus tabla-slim logical address: -6
+<6>[    1.049865] tabla2x-slim tabla2x-slim: Platform data from board file
+<6>[    1.113250] wcd9xxx_check_codec_type: codec is tabla_codec
+<6>[    1.113647] wcd9xxx_check_codec_type: Read codec idbytes & version
+<6>[    1.113647] byte_0[00000002] byte_1[00000000] byte_2[00000000]
+<6>[    1.113677]  byte_3[00000001] version = 2
+<4>[    1.115692] i2c-core: driver [tabla-i2c-core] using legacy suspend method
+<4>[    1.115875] i2c-core: driver [tabla-i2c-core] using legacy resume method
+<6>[    1.116882] bcm2079x-i2c 0-0077: bcm2079x_probe, probing bcm2079x driver flags = 0
+<6>[    1.117248] bcm2079x-i2c 0-0077: requesting IRQ 320
+<6>[    1.117523] bcm2079x-i2c 0-0077: bcm2079x_probe, probing bcm2079x driver exited successfully
+<6>[    1.118164] SCSI Media Changer driver v0.25 
+<6>[    1.118927] spi_qsd spi_qsd.0: master is unqueued, this is deprecated
+<6>[    1.120605] tun: Universal TUN/TAP device driver, 1.6
+<6>[    1.120788] tun: (C) 1999-2004 Max Krasnyansky <maxk@qualcomm.com>
+<6>[    1.121002] rmnet_init: BAM devices[8]
+<6>[    1.135742] PPP generic driver version 2.4.2
+<6>[    1.135986] PPP BSD Compression module registered
+<6>[    1.136108] PPP Deflate Compression module registered
+<6>[    1.136840] PPP MPPE Compression module registered
+<6>[    1.136962] NET: Registered protocol family 24
+<6>[    1.137207] SLIP: version 0.8.4-NET3.019-NEWTTY (dynamic channels, max=256) (6 bit encapsulation enabled).
+<6>[    1.137329] CSLIP: code copyright 1989 Regents of the University of California.
+<6>[    1.137634] wcnss_wlan probed in built-in mode
+<6>[    1.138641] usbcore: registered new interface driver asix
+<6>[    1.138824] usbcore: registered new interface driver cdc_ether
+<6>[    1.138977] usbcore: registered new interface driver net1080
+<6>[    1.139190] usbcore: registered new interface driver cdc_subset
+<6>[    1.139434] usbcore: registered new interface driver zaurus
+<6>[    1.139709] usbcore: registered new interface driver cdc_ncm
+<4>[    1.139953] smb345_probe+
+<5>[    1.143371] smb345_charger: [smb345_inok_irq] GPIO pin irq 311 requested ok, smb345_INOK = L
+<5>[    1.143615] smb345_charger: [smb345_wireless_irq] GPIO pin irq 322 requested ok, wpc_pok = H
+<5>[    1.143829] smb345_charger: [smb345_wireless_en_config] GPIO pin 179, 183 requested ok, wpc_en1 = L, wpc_en2 = L
+<4>[    1.144012] smb345_probe-
+<4>[    1.144165] i2c-core: driver [smb345] using legacy suspend method
+<4>[    1.144348] i2c-core: driver [smb345] using legacy resume method
+<5>[    1.144500] bq27541_probe + client->addr= 55
+<5>[    1.145721] bq27541_get_psp status: Not charging ret= 0x0200
+<5>[    1.146728] bq27541_get_psp voltage_now= 4296000 uV
+<5>[    1.147766] bq27541_get_capacity = 100% ret= 100
+<5>[    1.148773] bq27541_get_psp temperature= 257 (0.1¢XC)
+<5>[    1.150665] bq27541_get_psp current = 0 mA
+<5>[    1.151794] bq27541_get_psp status: Not charging ret= 0x0200
+<5>[    1.152770] bq27541_get_psp status: Not charging ret= 0x0200
+<5>[    1.153747] setup_low_battery_irq irq=317, LL_BAT_T30=1
+<5>[    1.153930] bq27541_get_psp voltage_now= 4296000 uV
+<5>[    1.154602] bq27541_probe - bq27541-battery driver registered
+<4>[    1.154785] i2c-core: driver [bq27541-battery] using legacy suspend method
+<5>[    1.155059] bq27541_get_capacity = 100% ret= 100
+<4>[    1.155303] i2c-core: driver [bq27541-battery] using legacy resume method
+<6>[    1.155883] msm_otg msm_otg: msm_otg probe
+<3>[    1.156036] msm_otg msm_otg: failed to get phy_clk
+<5>[    1.156341] bq27541_get_psp temperature= 257 (0.1¢XC)
+<6>[    1.157012] msm_otg msm_otg: OTG regs = f0308000
+<5>[    1.158203] bq27541_get_psp current = 0 mA
+<3>[    1.160125] msm_otg msm_otg: PMIC IRQ for ID notifications doesn't exist
+<7>[    1.160491] gpio_request: gpio-23 (msm_otg_ap_acok) status -16
+<4>[    1.160491] gpio 23 request failed 
+<4>[    1.160644] msm_otg_acok_init: GPIO pin irq 311 requested ok, msm_otg_ACOK = L
+<7>[    1.160858] gpio_request: gpio-77 (msm_otg_id_pin) status -16
+<4>[    1.160888] gpio 77 request failed 
+<4>[    1.161102] msm_otg_id_pin_init: GPIO pin irq 365 requested ok, msm_otg_id_pin = H
+<6>[    1.161621] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+<6>[    1.162872] usbcore: registered new interface driver cdc_acm
+<6>[    1.163055] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+<6>[    1.163146] Initializing USB Mass Storage driver...
+<6>[    1.163391] usbcore: registered new interface driver usb-storage
+<6>[    1.163482] USB Mass Storage support registered.
+<6>[    1.163696] usbcore: registered new interface driver ums-alauda
+<6>[    1.163879] usbcore: registered new interface driver ums-cypress
+<6>[    1.164093] usbcore: registered new interface driver ums-datafab
+<6>[    1.164245] usbcore: registered new interface driver ums-freecom
+<6>[    1.164459] usbcore: registered new interface driver ums-isd200
+<6>[    1.164611] usbcore: registered new interface driver ums-jumpshot
+<6>[    1.164825] usbcore: registered new interface driver ums-karma
+<6>[    1.164978] usbcore: registered new interface driver ums-onetouch
+<6>[    1.165191] usbcore: registered new interface driver ums-sddr09
+<6>[    1.165344] usbcore: registered new interface driver ums-sddr55
+<6>[    1.165557] usbcore: registered new interface driver ums-usbat
+<6>[    1.165802] usbcore: registered new interface driver usbserial
+<6>[    1.165985] usbserial: USB Serial Driver core
+<6>[    1.166137] usbcore: registered new interface driver qc_csvt
+<6>[    1.166381] USB Serial support registered for qc_csvt
+<6>[    1.166534] usbcore: registered new interface driver usb_ehset_test
+<6>[    1.166778] usbcore: registered new interface driver diag_bridge
+<6>[    1.167114] usbcore: registered new interface driver mdm_bridge
+<6>[    1.168029] usbcore: registered new interface driver ks_bridge
+<6>[    1.168151] ksb_init: init done
+<6>[    1.168640] msm_otg msm_otg: phy_reset: success
+<6>[    1.169525] msm_hsusb msm_hsusb: [ci13xxx_start] hw_ep_max = 32
+<6>[    1.169952] mbim_init: initialize 1 instances
+<6>[    1.170166] mbim_init: Initialized 1 ports
+<6>[    1.172241] rndis_qc_init: initialize rndis QC instance
+<6>[    1.172821] android_usb gadget: Mass Storage Function, version: 2009/09/11
+<6>[    1.172943] android_usb gadget: Number of LUNs=1
+<6>[    1.173126]  lun0: LUN: removable file: (no medium)
+<6>[    1.173583] android_usb gadget: android_usb ready
+<6>[    1.174560] mousedev: PS/2 mouse device common for all mice
+<6>[    1.175323] usbcore: registered new interface driver xpad
+<4>[    1.175506] [ektf3k]:[elan] elan_ktf3k_ts_init
+<4>[    1.175781] [ektf3k]:[ELAN] Start HW reset!
+<4>[    1.276763] [usb_otg] switch to peripheral mode by default (boot)
+<4>[    1.436767] [ektf3k]:[elan]detect intr=>Old FW
+<4>[    1.436859] [ektf3k]:The boot code is old!
+<4>[    1.466705] [ektf3k]:[elan] __hello_packet_handler: hello packet 55:55:55:55
+<4>[    1.466796] [ektf3k]:[elan] hello packet's rc = 0
+<6>[    1.676879] notifying plugin
+<4>[    1.678833] [ektf3k]:[elan] __fw_packet_handler: firmware version: 0xa038
+<4>[    1.680938] [ektf3k]:[elan] __fw_packet_handler: X resolution: 0x007e
+<4>[    1.682983] [ektf3k]:[elan] __fw_packet_handler: Y resolution: 0x00d2
+<4>[    1.685089] [ektf3k]:[elan] __fw_packet_handler: firmware id: 0x3029
+<4>[    1.687164] [ektf3k]:[elan] __fw_packet_handler: boot code id: 0x6047
+<4>[    1.687377] [ektf3k]:[Elan] Max X=2239, Max Y=1343
+<6>[    1.687683] input: elan-touchscreen as /devices/virtual/input/input0
+<4>[    1.688110] [ektf3k]:The firmware was version 0xA038 and id:0x3029
+<4>[    1.688262] [ektf3k]: /proc/ektf_dbg created
+<4>[    1.688812] [ektf3k]:[elan] Start touchscreen elan-touchscreen in interrupt mode
+<4>[    1.689025] [ektf3k]:[ELAN]misc_register finished!!
+<6>[    1.689208] elan-ktf3k 3-0010: Update power source to 0
+<6>[    1.709228] lis3dh_acc accelerometer driver: init
+<4>[    1.709472] i2c-core: driver [lis3dh_acc] using legacy suspend method
+<4>[    1.709564] i2c-core: driver [lis3dh_acc] using legacy resume method
+<6>[    1.710052] ASUSTek: lid_driver_probe
+<6>[    1.710327] input: lid_input as /devices/virtual/input/input1
+<6>[    1.712097] using rtc device, pm8xxx_rtc, for alarms
+<6>[    1.712219] rtc-pm8xxx rtc-pm8xxx: rtc core: registered pm8xxx_rtc as rtc0
+<6>[    1.712890] i2c /dev entries driver
+<3>[    1.716674] ov5693_init_module:105
+<3>[    1.717071] ov5693_init_module:110 rc -19
+<3>[    1.751770] gpio 25 VCM_PD(1)
+<3>[    1.751922] gpio 31 XSHUTDN(1)
+<6>[    1.806701] msm_otg msm_otg: chg_type = USB_SDP_CHARGER
+<5>[    1.806884] smb345_charger: [usb_cable_type_detect] INOK=L
+<5>[    1.806976] smb345_charger: [usb_cable_type_detect] Cable: SDP
+<5>[    1.807617] smb345_charger: [smb345_vflt_setting] Bypass set Float Volt=e8
+<4>[    1.807983] ========================================================
+<4>[    1.808197] bq27541_battery_callback  usb_cable_state = 1
+<4>[    1.808288] ========================================================
+<6>[    1.808471] battery_callback cable_wake_lock 5 sec...
+<6>[    1.808471]  
+<6>[    1.808685] elan-ktf3k 3-0010: Update power source to 1
+<6>[    1.809112] The USB cable status = CHARGER_SDP
+<6>[    1.811920] mi1040_init_module:323
+<3>[    1.812500] mi1040_init_module:329 rc -19
+<6>[    1.812683] msm_hsusb msm_hsusb: CI13XXX_CONTROLLER_RESET_EVENT received
+<3>[    1.986633] gpio 43 CAM_RST(1)
+<6>[    2.046569] mi1040_sensor_match_id +++
+<6>[    2.047302] Sensor id: 0x2481
+<6>[    2.047424] PMIC gpio 11 CAM_VENDOR_1(1)
+<6>[    2.047637] PMIC gpio 10 CAM_VENDOR_0(0)
+<6>[    2.047760] PMIC gpio 24 CAM_LENS(1)
+<6>[    2.047851] Vendor is A
+<6>[    2.048034] mi1040_sensor_match_id ---
+<6>[    2.288635] lirc_dev: IR Remote Control driver registered, major 237 
+<6>[    2.288757] IR NEC protocol handler initialized
+<6>[    2.288848] IR RC5(x) protocol handler initialized
+<6>[    2.288970] IR RC6 protocol handler initialized
+<6>[    2.289154] IR JVC protocol handler initialized
+<6>[    2.289245] IR Sony protocol handler initialized
+<6>[    2.289428] IR RC5 (streamzap) protocol handler initialized
+<6>[    2.289550] IR SANYO protocol handler initialized
+<6>[    2.289642] IR MCE Keyboard/mouse protocol handler initialized
+<6>[    2.289825] IR LIRC bridge handler initialized
+<6>[    2.290527] gspca_main: v2.14.0 registered
+<6>[    2.291076] usbcore: registered new interface driver uvcvideo
+<6>[    2.291198] USB Video Class driver (1.1.1)
+<3>[    2.293060] pm8xxx_adc_probe: failed to request pa_therm vreg with error -517
+<6>[    2.294097] CAP1106: [cap1106_init] 
+<4>[    2.294342] i2c-core: driver [cap1106] using legacy suspend method
+<4>[    2.294464] i2c-core: driver [cap1106] using legacy resume method
+<6>[    2.317993] pm8xxx_tm_probe: OK
+<6>[    2.318969] pm8xxx_tm_probe: OK
+<6>[    2.320892] device-mapper: ioctl: 4.22.0-ioctl (2011-10-19) initialised: dm-devel@redhat.com
+<6>[    2.321655] Bluetooth: HCI UART driver ver 2.2
+<6>[    2.321868] Bluetooth: HCI H4 protocol initialized
+<6>[    2.322235] Bluetooth: HCIATH3K protocol initialized
+<6>[    2.322937] Bluetooth: HCI_IBS protocol initialized
+<6>[    2.324951] cpuidle: using governor ladder
+<6>[    2.325195] cpuidle: using governor menu
+<6>[    2.326141] mmc0: SDCC Version: 0x06000018
+<6>[    2.328399] mmc0: bam physical base=0x12402000
+<6>[    2.328491] mmc0: bam virtual base=0xf0324000
+<6>[    2.328613] sps:BAM 0x12402000 is registered.
+<6>[    2.328796] mmc0: BAM device registered. bam_handle=0xed930600
+<6>[    2.330780] sps:BAM 0x12402000 enabled: ver:0x5, number of pipes:6
+<6>[    2.332611] mmc0: Qualcomm MSM SDCC-BAM at 0x0000000012402000 irq 130
+<6>[    2.332824] mmc0: Qualcomm MSM SDCC-DML at 0x0000000012400800
+<3>[    2.333068] mmc0: No card detect facilities available
+<6>[    2.335021] mmc0: Qualcomm MSM SDCC-core at 0x0000000012400000 irq 136,0 dma -1 dmacrcri -1
+<6>[    2.335205] mmc0: Controller capabilities: 0x0000039a
+<6>[    2.335388] mmc0: 8 bit data mode enabled
+<6>[    2.335479] mmc0: 4 bit data mode disabled
+<6>[    2.335601] mmc0: polling status mode disabled
+<6>[    2.335784] mmc0: MMC clock 400000 -> 96000000 Hz, PCLK 0 Hz
+<6>[    2.335906] mmc0: Slot eject status = 0
+<6>[    2.335998] mmc0: Power save feature enable = 1
+<6>[    2.336120] mmc0: SPS-BAM data transfer mode available
+<6>[    2.339111] usbcore: registered new interface driver usbhid
+<6>[    2.339294] usbhid: USB HID core driver
+<6>[    2.340759] ashmem: initialized
+<6>[    2.341125] logger: created 256K log 'log_main'
+<6>[    2.341674] logger: created 256K log 'log_events'
+<6>[    2.342071] logger: created 256K log 'log_radio'
+<6>[    2.342590] logger: created 256K log 'log_system'
+<6>[    2.343963] usbcore: registered new interface driver snd-usb-audio
+<3>[    2.346862] tabla_probe
+<6>[    2.349700] msm_pcm_probe: dev name msm-voip-dsp
+<6>[    2.350402] msm-dai-q6-mi2s msm-dai-q6-mi2s: msm_dai_q6_mi2s_platform_data_validation: playback sdline 0 capture sdline 8
+<6>[    2.350799] msm-dai-q6-mi2s msm-dai-q6-mi2s: msm_dai_q6_mi2s_platform_data_validation: playback ch_max 0 capture ch_mx 8
+<6>[    2.353118] msm_pcm_probe: dev name msm-pcm-dsp
+<6>[    2.354003] msm_pcm_probe: dev name msm-multi-ch-pcm-dsp
+<6>[    2.354736] msm_pcm_probe: dev name msm-lowlatency-pcm-dsp
+<6>[    2.355102] adding pm_qos request in low latency driver
+<6>[    2.355316] done adding pm_qos request in low latency driver
+<6>[    2.357299] msm_compr_probe: dev name msm-compr-dsp
+<6>[    2.358551] msm-pcm-lpa msm-pcm-lpa: msm_pcm_probe: dev name msm-pcm-lpa
+<3>[    2.360595] msm8930_audio_init: Not the right machine type
+<3>[    2.360809] msm_audio_init: Not the right machine type
+<6>[    2.361022] msm_audio_init: Not APQ8064 in I2S mode
+<6>[    2.470855] mmc0: new HS200 MMC card at address 0001
+<6>[    2.471771] mmcblk0: mmc0:0001 HAG2e 14.6 GiB 
+<6>[    2.478851]  mmcblk0: p1 p2 p3 p4 p5 p6 p7 p8 p9 p10 p11 p12 p13 p14 p15 p16 p17 p18 p19 p20 p21 p22 p23 p24 p25 p26 p27 p28 p29 p30
+<6>[    2.526794] asoc: snd-soc-dummy-dai <-> MultiMedia1 mapping ok
+<6>[    2.528015] asoc: snd-soc-dummy-dai <-> MultiMedia2 mapping ok
+<6>[    2.529357] asoc: snd-soc-dummy-dai <-> CS-VOICE mapping ok
+<6>[    2.530548] asoc: snd-soc-dummy-dai <-> VoIP mapping ok
+<6>[    2.531768] asoc: snd-soc-dummy-dai <-> MultiMedia3 mapping ok
+<6>[    2.532989] asoc: snd-soc-dummy-dai <-> SLIMBUS0_HOSTLESS mapping ok
+<6>[    2.534240] asoc: snd-soc-dummy-dai <-> INT_FM_HOSTLESS mapping ok
+<6>[    2.535278] asoc: msm-stub-rx <-> msm-dai-q6.241 mapping ok
+<6>[    2.536560] asoc: msm-stub-tx <-> msm-dai-q6.240 mapping ok
+<6>[    2.537811] asoc: snd-soc-dummy-dai <-> MultiMedia4 mapping ok
+<6>[    2.539154] asoc: snd-soc-dummy-dai <-> AUXPCM_HOSTLESS mapping ok
+<6>[    2.540313] asoc: snd-soc-dummy-dai <-> HDMI_HOSTLESS mapping ok
+<6>[    2.541717] asoc: snd-soc-dummy-dai <-> VOICE_STUB mapping ok
+<6>[    2.542785] asoc: snd-soc-dummy-dai <-> VoLTE mapping ok
+<6>[    2.544006] asoc: snd-soc-dummy-dai <-> MultiMedia5 mapping ok
+<6>[    2.546264] asoc: tabla_rx1 <-> msm-dai-q6.16384 mapping ok
+<6>[    2.552673] asoc: tabla_tx1 <-> msm-dai-q6.16385 mapping ok
+<6>[    2.553619] asoc: msm-stub-rx <-> msm-dai-q6.12288 mapping ok
+<6>[    2.554595] asoc: msm-stub-tx <-> msm-dai-q6.12289 mapping ok
+<6>[    2.555633] asoc: msm-stub-rx <-> msm-dai-q6.12292 mapping ok
+<6>[    2.556823] asoc: msm-stub-tx <-> msm-dai-q6.12293 mapping ok
+<6>[    2.557739] asoc: msm-stub-rx <-> msm-dai-q6-hdmi.8 mapping ok
+<6>[    2.558807] asoc: msm-stub-rx <-> msm-dai-q6.224 mapping ok
+<6>[    2.559814] asoc: msm-stub-tx <-> msm-dai-q6.225 mapping ok
+<6>[    2.560852] asoc: msm-stub-rx <-> msm-dai-q6.2 mapping ok
+<6>[    2.561920] asoc: msm-stub-tx <-> msm-dai-q6.3 mapping ok
+<6>[    2.563110] asoc: tabla_rx2 <-> msm-dai-stub mapping ok
+<6>[    2.563934] asoc: tabla_tx1 <-> msm-dai-stub mapping ok
+<6>[    2.565093] asoc: msm-stub-rx <-> msm-dai-q6.16386 mapping ok
+<6>[    2.566101] asoc: msm-stub-tx <-> msm-dai-q6.16387 mapping ok
+<6>[    2.567199] asoc: tabla_tx2 <-> msm-dai-q6.16389 mapping ok
+<6>[    2.568145] asoc: tabla_rx3 <-> msm-dai-q6.16388 mapping ok
+<6>[    2.569335] asoc: msm-stub-rx <-> msm-dai-q6.16392 mapping ok
+<6>[    2.570220] asoc: msm-stub-tx <-> msm-dai-q6.16393 mapping ok
+<6>[    2.571380] asoc: tabla_tx3 <-> msm-dai-stub mapping ok
+<6>[    2.572326] asoc: msm-stub-rx <-> msm-dai-q6.16390 mapping ok
+<6>[    2.573394] asoc: msm-stub-tx <-> msm-dai-q6.16391 mapping ok
+<6>[    2.577453] input: apq8064-tabla-snd-card Button Jack as /devices/platform/soc-audio.0/sound/card0/input2
+<6>[    2.578369] input: apq8064-tabla-snd-card Headset Jack as /devices/platform/soc-audio.0/sound/card0/input3
+<6>[    2.584838] headset_init+ #####
+<6>[    2.586456] input: h2w button as /devices/virtual/input/input4
+<6>[    2.587280] HEADSET: Headset detection mode
+<6>[    2.646911] set_hs_micbias badgap status: OFF power down bandgap
+<6>[    2.647369] headset_init- #####
+<6>[    2.647827] u32 classifier
+<6>[    2.648040]     Actions configured
+<6>[    2.648406] Netfilter messages via NETLINK v0.30.
+<6>[    2.648773] nf_conntrack version 0.5.0 (16384 buckets, 65536 max)
+<6>[    2.650756] ctnetlink v0.93: registering with nfnetlink.
+<6>[    2.651062] NF_TPROXY: Transparent proxy support initialized, version 4.1.0
+<6>[    2.651428] NF_TPROXY: Copyright (c) 2006-2007 BalaBit IT Ltd.
+<6>[    2.652130] xt_time: kernel timezone is -0000
+<6>[    2.653381] ip_tables: (C) 2000-2006 Netfilter Core Team
+<6>[    2.654388] arp_tables: (C) 2002 David S. Miller
+<6>[    2.654785] TCP: cubic registered
+<6>[    2.656524] NET: Registered protocol family 10
+<6>[    2.663848] Mobile IPv6
+<6>[    2.664123] ip6_tables: (C) 2000-2006 Netfilter Core Team
+<6>[    2.665069] IPv6 over IPv4 tunneling driver
+<6>[    2.666748] NET: Registered protocol family 17
+<6>[    2.667053] NET: Registered protocol family 15
+<6>[    2.667541] Bluetooth: RFCOMM TTY layer initialized
+<6>[    2.667785] Bluetooth: RFCOMM socket layer initialized
+<6>[    2.668151] Bluetooth: RFCOMM ver 1.11
+<6>[    2.668365] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+<6>[    2.668701] Bluetooth: BNEP filters: protocol multicast
+<6>[    2.668914] Bluetooth: HIDP (Human Interface Emulation) ver 1.2
+<6>[    2.669525] L2TP core driver, V2.0
+<6>[    2.669769] PPPoL2TP kernel driver, V2.0
+<5>[    2.669982] Registering the dns_resolver key type
+<6>[    2.671997] VFP support v0.3: implementor 51 architecture 64 part 6f variant 1 rev 0
+<5>[    2.672454] Registering SWP/SWPB emulation handler
+<6>[    2.672821] clock_late_init: Removing enables held for handed-off clocks
+<6>[    2.680541] MSM Watchdog Initialized
+<7>[    2.690795] gpio_set_debounce: gpio-26 status -22
+<7>[    2.690948] gpio_set_debounce: gpio-155 status -22
+<7>[    2.691009] gpio_set_debounce: gpio-189 status -22
+<6>[    2.691253] input: gpio-keys as /devices/platform/gpio-keys.0/input/input5
+<6>[    2.691619] rtc-pm8xxx rtc-pm8xxx: setting system clock to 2013-12-04 06:17:29 UTC (1386137849)
+<3>[    2.691986] MSM_DCVS: msm_dcvs_register_core: msm_dcvs_register_core: scm register core fail handle = 1 ret = -22
+<3>[    2.692138] Unable to register core for 0
+<4>[    2.692230] msm_dcvs_gov: probe of msm_dcvs_gov failed with error -22
+<6>[    2.692626] ALSA device list:
+<6>[    2.692687]   #0: apq8064-tabla-snd-card
+<6>[    2.693481] Freeing init memory: 1036K
+<7>[    2.698303] SELinux: 128 avtab hash slots, 490 rules.
+<7>[    2.698486] SELinux: 128 avtab hash slots, 490 rules.
+<7>[    2.698486] SELinux:  1 users, 2 roles, 274 types, 0 bools, 1 sens, 1024 cats
+<7>[    2.698516] SELinux:  84 classes, 490 rules
+<7>[    2.699249] SELinux:  Completing initialization.
+<7>[    2.699249] SELinux:  Setting up existing superblocks.
+<7>[    2.699279] SELinux: initialized (dev sysfs, type sysfs), uses genfs_contexts
+<7>[    2.699279] SELinux: initialized (dev rootfs, type rootfs), uses genfs_contexts
+<7>[    2.699371] SELinux: initialized (dev bdev, type bdev), not configured for labeling
+<7>[    2.699401] SELinux: initialized (dev proc, type proc), uses genfs_contexts
+<7>[    2.699401] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[    2.699432] SELinux: initialized (dev debugfs, type debugfs), uses genfs_contexts
+<7>[    2.709503] SELinux: initialized (dev sockfs, type sockfs), uses task SIDs
+<7>[    2.709533] SELinux: initialized (dev pipefs, type pipefs), uses task SIDs
+<7>[    2.709564] SELinux: initialized (dev anon_inodefs, type anon_inodefs), not configured for labeling
+<7>[    2.709564] SELinux: initialized (dev devpts, type devpts), uses transition SIDs
+<7>[    2.709594] SELinux: initialized (dev selinuxfs, type selinuxfs), uses genfs_contexts
+<7>[    2.709716] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[    2.709747] SELinux: initialized (dev sysfs, type sysfs), uses genfs_contexts
+<5>[    2.883819] type=1403 audit(1386137849.680:2): policy loaded auid=4294967295 ses=4294967295
+<4>[    2.884094] SELinux: Loaded policy from (null)
+<4>[    2.889404] init (1): /proc/1/oom_adj is deprecated, please use /proc/1/oom_score_adj instead.
+<5>[    2.900604] bq27541_get_psp status: Full ret= 0x0200
+<5>[    2.901245] bq27541_get_psp voltage_now= 4295000 uV
+<5>[    2.901916] bq27541_get_capacity = 100% ret= 100
+<5>[    2.902557] bq27541_get_psp temperature= 257 (0.1¢XC)
+<5>[    2.903747] bq27541_get_psp current = 0 mA
+<6>[    3.122955] keychord: using input dev gpio-keys for fevent
+<3>[    3.123352] init: cannot open '/initlogo.rle'
+<7>[    3.187011] SELinux: initialized (dev cgroup, type cgroup), uses genfs_contexts
+<7>[    3.188171] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[    3.188629] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[    3.188812] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<7>[    3.267150] SELinux: initialized (dev cgroup, type cgroup), uses genfs_contexts
+<6>[    3.279266] EXT4-fs (mmcblk0p22): mounted filesystem with ordered data mode. Opts: barrier=1
+<7>[    3.279357] SELinux: initialized (dev mmcblk0p22, type ext4), uses xattr
+<6>[    3.379302] EXT4-fs (mmcblk0p23): recovery complete
+<6>[    3.380249] EXT4-fs (mmcblk0p23): mounted filesystem with ordered data mode. Opts: nomblk_io_submit,errors=remount-ro
+<7>[    3.380371] SELinux: initialized (dev mmcblk0p23, type ext4), uses xattr
+<6>[    3.457153] fs_mgr: Running /system/bin/e2fsck on /dev/block/platform/msm_sdcc.1/by-name/cache
+<6>[    3.493011] e2fsck: e2fsck 1.41.14 (22-Dec-2010)
+<6>[    3.493072] e2fsck: /dev/block/platform/msm_sdcc.1/by-name/cache: clean, 21/35840 files, 69413/143360 blocks
+<6>[    3.498199] EXT4-fs (mmcblk0p23): mounted filesystem with ordered data mode. Opts: barrier=1,data=ordered,nomblk_io_submit,errors=panic
+<7>[    3.498352] SELinux: initialized (dev mmcblk0p23, type ext4), uses xattr
+<7>[    3.724639] EXT4-fs (mmcblk0p30): ext4_orphan_cleanup: deleting unreferenced inode 604835
+<7>[    3.724884] EXT4-fs (mmcblk0p30): ext4_orphan_cleanup: deleting unreferenced inode 604700
+<6>[    3.724975] EXT4-fs (mmcblk0p30): 2 orphan inodes deleted
+<6>[    3.725036] EXT4-fs (mmcblk0p30): recovery complete
+<6>[    3.733428] EXT4-fs (mmcblk0p30): mounted filesystem with ordered data mode. Opts: nomblk_io_submit,errors=remount-ro
+<7>[    3.733551] SELinux: initialized (dev mmcblk0p30, type ext4), uses xattr
+<5>[    3.807983] bq27541_get_psp status: Full ret= 0x0200
+<5>[    3.808135] smb345_charger: [smb345_config_thermal_limit] Set HRD SFT limit, retval=41 setting=73
+<5>[    3.808959] bq27541_get_psp status: Full ret= 0x0200
+<5>[    3.809387] smb345_charger: [smb345_config_thermal_charging] temp=25, volt=4295000
+<5>[    3.809906] bq27541_get_psp voltage_now= 4295000 uV
+<5>[    3.810729] bq27541_get_capacity = 100% ret= 100
+<5>[    3.810882] smb345_charger: [smb345_config_thermal_charging] Bypass set Float Volt=e8
+<5>[    3.811584] bq27541_get_psp temperature= 257 (0.1¢XC)
+<5>[    3.811737] smb345_charger: [smb345_config_thermal_charging] Bypass charger enable
+<5>[    3.813232] bq27541_get_psp current = 0 mA
+<6>[    3.827178] fs_mgr: Running /system/bin/e2fsck on /dev/block/platform/msm_sdcc.1/by-name/userdata
+<6>[    3.840576] e2fsck: e2fsck 1.41.14 (22-Dec-2010)
+<6>[    3.840637] e2fsck: /dev/block/platform/msm_sdcc.1/by-name/userdata: clean, 9390/816000 files, 300662/3258363 blocks
+<6>[    3.843933] EXT4-fs (mmcblk0p30): mounted filesystem with ordered data mode. Opts: barrier=1,data=ordered,nomblk_io_submit,errors=panic
+<7>[    3.844055] SELinux: initialized (dev mmcblk0p30, type ext4), uses xattr
+<6>[    3.854003] EXT4-fs (mmcblk0p4): recovery complete
+<6>[    3.854919] EXT4-fs (mmcblk0p4): mounted filesystem with ordered data mode. Opts: barrier=1,data=ordered,nodelalloc
+<7>[    3.855072] SELinux: initialized (dev mmcblk0p4, type ext4), uses xattr
+<6>[    3.855468] adsp_boot_store:going to call adsp_loader_do
+<6>[    4.239990] pil pil0: q6: Brought out of reset
+<1>[    4.262878] diag: In diag_process_smd_cntl_read_data, Invalid Msg type 12 proc 1
+<6>[    4.284973] apr_tal:Q6 Is Up
+<3>[    4.292449] diag: proc 1, msg mask update fail -12, tried 419
+<6>[    4.347320] adsp_loader_do: Q6/ADSP image is loaded
+<3>[    4.398010] init: cannot find '/system/bin/rild', disabling 'ril-daemon'
+<3>[    4.442138] init: using deprecated syntax for specifying property 'ro.serialno', use ${name} instead
+<3>[    4.442352] init: using deprecated syntax for specifying property 'ro.product.manufacturer', use ${name} instead
+<3>[    4.442565] init: using deprecated syntax for specifying property 'ro.product.model', use ${name} instead
+<3>[    4.480834] enable_store: android_usb: already disabled
+<6>[    4.522735] msm_thermal: enabled = 0
+<6>[    4.553192] adb_open
+<6>[    4.553253] mtp_bind_config
+<6>[    4.553405] adb_bind_config
+<7>[    4.574066] SELinux: initialized (dev fuse, type fuse), uses genfs_contexts
+<6>[    4.726806] pil pil3: dsps: Brought out of reset
+<3>[    4.770965] msm_otg msm_otg: Failed notifying 1 charger type to PMIC
+<6>[    4.771148] android_work: android_work: did not send uevent (0 0   (null))
+<6>[    4.933135] wcnss_wlan wcnss_node_write: triggered by userspace
+<6>[    4.946655] android_work: android_work: sent uevent USB_STATE=CONNECTED
+<4>[    4.957122] mipi_dsi_panel_power+, on=1
+<4>[    5.037414] mipi_dsi_panel_power-
+<6>[    5.043609] mipi_JDI_lcd_on+
+<6>[    5.043609] mipi_JDI_lcd_on-, booting
+<7>[    5.048431] EXT_COMMON: hdmi_common_wta_hpd: '0' (unchanged)
+<3>[    5.093933] msm_otg msm_otg: Failed notifying 1 charger type to PMIC
+<6>[    5.094207] android_work: android_work: sent uevent USB_STATE=DISCONNECTED
+<6>[    5.142944] pil pil1: wcnss: Brought out of reset
+<6>[    5.167755] android_work: android_work: sent uevent USB_STATE=CONNECTED
+<6>[    5.244659] hdmi_msm hdmi_msm.1: hdmi_msm_hpd_feature: 1
+<7>[    5.347473] EXT_COMMON: hdmi_common_wta_hpd: '1'
+<3>[    5.460205] msm_otg msm_otg: Failed notifying 1 charger type to PMIC
+<6>[    5.460479] android_work: android_work: sent uevent USB_STATE=DISCONNECTED
+<6>[    5.479858] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    5.505767] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    5.506164] mdp4_overlay_mdp_perf_upd mdp clk is changed [1] from 0 to 200000000
+<6>[    5.533538] android_work: android_work: sent uevent USB_STATE=CONNECTED
+<6>[    5.538146] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    5.570953] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    5.581237] wcnss_wlan_ctrl_probe: SMD ctrl channel up
+<6>[    5.581726] wcnss: version 01040102
+<6>[    5.581817] wcnss: schedule dnld work for riva
+<6>[    5.588043] wcnss: NV bin size: 29772, total_fragments: 10
+<3>[    5.588165] wcnss: no space available for smd frame
+<6>[    5.603942] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[    5.617462] wcnss: no space available for smd frame
+<3>[    5.647491] wcnss: no space available for smd frame
+<6>[    5.653411] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[    5.677490] wcnss: no space available for smd frame
+<6>[    5.679016] android_usb gadget: high-speed config #1: android_usb
+<3>[    5.679168] msm_otg msm_otg: Failed notifying 1 charger type to PMIC
+<6>[    5.679229] msm_otg msm_otg: Avail curr from USB = 500
+<6>[    5.686187] MDP: unknown ioctl (cmd=40106da2) received!
+<7>[    5.696258] SELinux: initialized (dev tmpfs, type tmpfs), uses transition SIDs
+<6>[    5.710632] wcnss: received WCNSS_NVBIN_DNLD_RSP from ccpu
+<6>[    5.735504] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    5.737579] android_work: android_work: sent uevent USB_STATE=CONFIGURED
+<6>[    5.784912] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    5.817901] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    5.867218] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    5.900146] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    5.949462] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    5.982421] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.031829] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.064788] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.114044] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.146911] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.196319] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.229156] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.278594] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.328033] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.360961] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.410308] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.443176] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.492614] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.525482] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.574951] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.607788] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.657196] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.689971] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.739410] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.788787] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.817535] msm_ta_detect_work: USB exit ta detection - frindex
+<6>[    6.821777] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.871093] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.904083] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    6.953582] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.002868] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.035705] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.068481] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.118011] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.167419] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.200134] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.233062] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.282623] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.331939] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.381317] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.414245] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.463653] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.496520] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.529663] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.578857] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.611572] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.661010] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.693847] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.743347] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.792816] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.825653] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.875122] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.907897] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.957336] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    7.990264] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.039581] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.072418] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.121856] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.171203] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.204132] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.236968] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.286376] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.335784] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.368682] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.418029] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.450958] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.500396] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.533264] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.582702] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.632263] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.665130] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.698242] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.747406] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.780059] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.829528] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.878967] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.928436] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    8.961334] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.010589] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.016510] warning: `zygote' uses 32-bit capabilities (legacy support in use)
+<6>[    9.043579] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.092864] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.125762] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.158691] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.208282] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.257415] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.290374] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.339721] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.372650] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.422058] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.454986] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.504333] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.537261] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.586639] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.636169] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.652374] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.685455] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.734771] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.767761] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.817016] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.849822] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.899353] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.932128] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[    9.981597] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.031311] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.063903] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.113250] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.146240] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.195617] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.228515] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.277923] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.310852] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.360198] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.393066] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.442779] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.475341] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.524719] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.557617] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.607299] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.656494] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.689361] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.738800] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.771636] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.821105] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.853851] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.903350] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.936126] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   10.985656] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.018585] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.067932] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.100769] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.150268] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.199615] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.232543] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.281951] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.314880] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.364196] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.397125] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.446533] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.479583] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.528778] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.561676] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.611267] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.643951] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.693450] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.743041] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.775878] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.825286] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.858154] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.907440] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.940460] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   11.989715] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.022644] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.072143] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.104858] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.154632] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.187255] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.236511] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.269470] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.319061] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.368316] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.401306] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.450622] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.483642] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.532897] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.565856] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.615356] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.648132] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.697540] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.730407] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.779815] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.812683] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.862182] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.911529] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.944427] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   12.993927] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.026794] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.076110] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.109069] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.158508] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.191284] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.240814] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.273681] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.323150] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.355865] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.405364] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.455169] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.487670] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.537048] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.570098] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.619384] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.652313] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.701690] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.734741] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.784088] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.816864] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.866363] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.899169] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.948669] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   13.998413] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.030914] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.080291] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.113311] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.162567] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.195495] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.245025] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.278045] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.327270] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.360107] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.409606] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.442413] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.492004] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.541473] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.574096] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.623596] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.656524] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.705932] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.738800] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.788177] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.821075] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.870483] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.903289] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.952728] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   14.985595] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.035003] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.084442] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.117370] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.166870] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.199707] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.249053] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.281951] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.331329] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.364379] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.413757] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.446502] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.495941] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.528778] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.578369] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.597473] wcnss_post_bootup: Cancel APPS vote for Iris & Riva
+<6>[   15.611145] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.660644] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.709960] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.742919] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.792266] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.825317] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.874633] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.907592] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.956970] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   15.989746] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.039184] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.071990] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.121520] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.154327] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.203918] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.253326] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.286163] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.335601] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.368499] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.417816] MDP: unknown ioctl (cmd=40106da2) received!
+<5>[   16.436553] bq27541_get_capacity = 100% ret= 100
+<5>[   16.437286] bq27541_get_psp voltage_now= 4290000 uV
+<5>[   16.439636] bq27541_get_psp temperature= 257 (0.1¢XC)
+<5>[   16.440429] bq27541_get_psp status: Full ret= 0x0201
+<6>[   16.443939] request_suspend_state: wakeup (3->0) at 16446477844 (2013-12-04 06:17:43.239736770 UTC)
+<6>[   16.451019] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.483978] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.500579] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.533294] MDP: unknown ioctl (cmd=40106da2) received!
+<4>[   16.575927] lowmem_shrink: convert oom_adj to oom_score_adj:
+<4>[   16.576019] oom_adj 0 => oom_score_adj 0
+<4>[   16.576080] oom_adj 1 => oom_score_adj 58
+<4>[   16.576202] oom_adj 2 => oom_score_adj 117
+<4>[   16.576263] oom_adj 4 => oom_score_adj 235
+<4>[   16.576354] oom_adj 9 => oom_score_adj 529
+<4>[   16.576446] oom_adj 15 => oom_score_adj 1000
+<6>[   16.582733] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.615386] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.664825] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.697967] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.747100] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.796539] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.829376] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.878845] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.911743] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   16.922760] acc_open
+<6>[   16.922912] acc_release
+<6>[   16.957855] wlan: loading driver v3.2.2.17B
+<6>[   16.961242] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   16.967376] wlan: [502:E :VOS] INFO: NV binary file version=1 Driver default NV version=1, continue...
+<3>[   16.967376] 
+<6>[   16.967651] DefaultCountry is WS
+<6>[   16.994201] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.043457] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.076385] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.125793] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.158630] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.208068] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.217468] mipi_JDI_set_backlight: pwm enable
+<6>[   17.240936] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.249176] wlan: WCNSS WLAN version 1.4.1.2
+<6>[   17.249298] wlan: WCNSS software version 201019
+<6>[   17.249359] wlan: WCNSS hardware version WCN v2.0 RadioPhy vIris_TSMC_2.0 with 48MHz XO
+<6>[   17.249633] DefaultCountry is WS
+<7>[   17.249908] ieee80211 phy0: info: cfg80211 reg_notifier callback for country 00
+<7>[   17.249938] ieee80211 phy0: country: WS set by driver
+<6>[   17.268890] wlan: driver loaded
+<6>[   17.290466] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.339843] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.372894] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.422210] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.455047] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.504425] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.537322] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   17.566986] wlan: [671:E :SME] PMC: STA not associated with an AP with single active session. BMPS cannot be entered
+<6>[   17.567596] ADDRCONF(NETDEV_UP): p2p0: link is not ready
+<6>[   17.586730] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.619598] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.669036] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.701904] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.751403] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   17.764770] wlan: [671:E :SME] PMC: STA not associated with an AP with single active session. BMPS cannot be entered
+<6>[   17.765350] ADDRCONF(NETDEV_UP): wlan0: link is not ready
+<6>[   17.800811] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.833709] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.883270] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.915954] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.948883] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.965362] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   17.998382] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.048187] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.080780] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.130279] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.146362] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.163421] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.212615] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.228820] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.245849] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.261871] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.294921] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.311248] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.329803] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.360778] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.377197] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.393676] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.410461] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.457550] pil pil4: gss: Brought out of reset
+<6>[   18.459869] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   18.465789] Notify: smsm init
+<6>[   18.479583] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.492767] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.509552] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.542724] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   18.547088] msm_ipc_router_send_control_msg: xprt_info not initialized
+<3>[   18.548492] msm_ipc_router_send_control_msg: xprt_info not initialized
+<6>[   18.591491] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.617492] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.624572] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.642059] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.658020] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.677825] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.724060] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.756439] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   18.758666] 
+<3>[   18.758666] SMSM: Modem SMSM state changed to SMSM_RESET.
+<3>[   18.758880] Notify: start reset
+<3>[   18.758880] GSS SMSM state changed to SMSM_RESET.
+<3>[   18.758880] Probable err_fatal on the GSS. Calling subsystem restart...
+<3>[   18.758911] GSS subsystem failure reason: (unknown, smem_get_entry failed).
+<6>[   18.758911] subsys-restart: subsystem_restart_dev(): Restart sequence requested for gss, restart_level = 3.
+<6>[   18.758941] subsys-restart: subsystem_shutdown(): [ec4c63c0]: Shutting down gss
+<6>[   18.763732] subsys-restart: subsystem_powerup(): [ec4c63c0]: Powering up gss
+<6>[   18.818145] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.855133] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.888397] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.937866] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.970458] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   18.980316] pil pil4: gss: Brought out of reset
+<6>[   18.980499] subsys-restart: subsystem_restart_wq_func(): [ec4c63c0]: Restart sequence for gss completed.
+<3>[   18.987762] Notify: smsm init
+<6>[   19.003295] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.019744] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.052978] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.070312] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.102172] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.118560] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.135101] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.151550] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.184722] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.217742] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.234008] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.250488] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.267211] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.283599] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.300292] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.316558] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.333312] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.349792] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.366271] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.382568] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.399383] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.415802] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.432373] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.448669] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.465118] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.481842] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.498535] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.514801] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.531188] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.547607] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.564453] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.581054] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.599151] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.613647] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.631591] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.647247] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.659973] mtp_open
+<6>[   19.663116] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.679656] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.696502] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.713348] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.729644] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.745971] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.762695] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.778625] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.796081] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.812133] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.844696] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.861267] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.877655] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.894439] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.927154] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.943756] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.960235] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.976776] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   19.993225] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.009613] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.026184] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.059173] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.108459] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.141479] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.190979] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.207336] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.223693] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.273254] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.306091] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.355621] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.388458] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.404907] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.437957] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.487274] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.520416] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.569610] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.602539] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.651947] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.684844] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.734252] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.767242] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.816528] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.849426] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.898956] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.948272] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   20.981201] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.030517] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.063629] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.112854] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.145843] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.195220] MDP: unknown ioctl (cmd=40106da2) received!
+<7>[   21.223175] ieee80211 phy0: info: cfg80211 reg_notifier callback for country 00
+<7>[   21.223175] ieee80211 phy0: country: US set by driver
+<7>[   21.223236] ieee80211 phy0: info: cfg80211 reg_notifier callback for country 00
+<7>[   21.223236] ieee80211 phy0: country: US set by driver
+<7>[   21.223266] ieee80211 phy0: info: cfg80211 reg_notifier callback for country 00
+<7>[   21.223266] ieee80211 phy0: country: US set by driver
+<6>[   21.228179] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.277618] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   21.279815] wlan: [589:E :PE ] wlan_cfgGetInt: 323: Not valid cfg id 1
+<3>[   21.279998] wlan: [589:E :PE ] __limProcessAddBAReq: 1307: ADDBAREQ NUMBUFF 64
+<6>[   21.288635] wlan: connected to 20:aa:4b:e2:6c:73
+<6>[   21.288848] wlan(6) 20:aa:4b:e2:6c:73 Standalone
+<6>[   21.289398] ADDRCONF(NETDEV_CHANGE): wlan0: link becomes ready
+<6>[   21.310424] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   21.317138] wlan: [671:E :SME] sme_FTUpdateKey: Unhandled state=0
+<3>[   21.317504] wlan: [671:E :SME] sme_FTUpdateKey: Unhandled state=0
+<6>[   21.343658] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.360015] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.376556] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.392883] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.442535] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.458923] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.475341] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.491912] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.508270] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.524963] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.541351] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.557830] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.574676] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.590972] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.607421] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.623809] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.640777] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.656982] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.673187] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.689910] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.706359] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.722747] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.739410] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.755859] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   21.760772] qtaguid: iface_stat: stat_update() wlan0 not found
+<6>[   21.772460] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.788787] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.805328] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.822113] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.838317] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.855041] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.871337] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.887847] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.904449] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.920776] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   21.938079] wlan: [589:E :SME] sme_QosPmcDeviceStateUpdateInd: 7214: nothing to process in PMC state 6
+<6>[   21.939361] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.954254] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.970642] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   21.987182] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.003417] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.019775] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.069427] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.102203] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.151702] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.201080] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.233886] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.283386] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.316558] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.365875] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.415649] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.464691] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.499877] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.547027] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.580688] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.630065] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.663360] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.713348] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.745147] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.794921] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.826751] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.877197] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.909088] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   22.959991] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.008575] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.151397] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.188781] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.221710] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.271118] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.304534] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.320800] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.337127] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.353454] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.403015] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.452789] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.485687] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   23.518707] MDP: unknown ioctl (cmd=40106da2) received!
+<3>[   23.537506] init: sys_prop: permission denied uid:1003  name:service.bootanim.exit
+<6>[   23.552703] MDP: unknown ioctl (cmd=40106da2) received!
+<7>[   23.725982] ieee80211 phy0: info: cfg80211 reg_notifier callback for country 00
+<7>[   23.725982] ieee80211 phy0: country: US set by driver
+<7>[   23.726440] ieee80211 phy0: info: cfg80211 reg_notifier callback for country 00
+<7>[   23.726470] ieee80211 phy0: country: US set by driver
+<6>[   24.458923] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.474792] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.491546] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.507965] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.524322] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.540893] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.557830] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.574310] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.604522] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.624298] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.640563] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.657104] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.673675] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.691436] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.706909] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.723449] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.740203] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.756652] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.773223] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.789794] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.806365] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.823150] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.842346] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.859130] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.873748] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.888671] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.905273] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.921844] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.938446] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.955017] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.971588] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   24.988433] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   25.004791] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   25.021453] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   25.054748] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   25.071258] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   25.994873] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   27.000518] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   28.022705] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   29.587402] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   30.071105] adb_release
+<6>[   30.078582] mtp_release
+<6>[   30.082427] adb_open
+<6>[   30.082550] mtp_bind_config
+<6>[   30.082702] adb_bind_config
+<3>[   30.085906] msm_otg msm_otg: Failed notifying 1 charger type to PMIC
+<6>[   30.086029] msm_otg msm_otg: Avail curr from USB = 2
+<6>[   30.086181] msm_otg msm_otg: current: 500 -> 2 (mA)
+<6>[   30.086273] msm_hsusb msm_hsusb: CI13XXX_CONTROLLER_SUSPEND_EVENT received
+<3>[   30.196868] msm_otg msm_otg: Failed notifying 1 charger type to PMIC
+<6>[   30.197143] msm_otg msm_otg: Avail curr from USB = 0
+<6>[   30.198608] android_work: android_work: sent uevent USB_STATE=DISCONNECTED
+<6>[   30.375457] android_work: android_work: sent uevent USB_STATE=CONNECTED
+<3>[   30.523101] msm_otg msm_otg: Failed notifying 1 charger type to PMIC
+<6>[   30.524383] android_work: android_work: sent uevent USB_STATE=DISCONNECTED
+<6>[   30.598571] android_work: android_work: sent uevent USB_STATE=CONNECTED
+<3>[   30.716552] msm_otg msm_otg: Failed notifying 1 charger type to PMIC
+<6>[   30.717224] android_work: android_work: sent uevent USB_STATE=DISCONNECTED
+<6>[   30.790985] android_work: android_work: sent uevent USB_STATE=CONNECTED
+<6>[   30.934539] android_usb gadget: high-speed config #1: android_usb
+<3>[   30.935028] msm_otg msm_otg: Failed notifying 1 charger type to PMIC
+<6>[   30.935241] msm_otg msm_otg: Avail curr from USB = 500
+<6>[   30.988677] android_work: android_work: sent uevent USB_STATE=CONFIGURED
+<6>[   31.024047] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   33.017608] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   34.041839] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   35.069213] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   36.053405] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   37.058532] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   38.100402] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   44.083160] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   45.071166] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   46.100311] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.735931] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.760345] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.870605] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.874694] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.890991] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.907470] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.923889] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.940521] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.957122] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.973785] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   53.990264] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.007171] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.023406] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.040252] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.056793] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.073394] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.089935] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.106445] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.122985] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.139526] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.155944] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.172485] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.190460] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.205566] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.222015] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.240295] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.255035] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.271545] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.288024] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.304840] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.321075] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.338134] mipi_JDI_set_backlight: pwm disable
+<6>[   54.338623] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.354217] MDP: unknown ioctl (cmd=40106da2) received!
+<6>[   54.428466] mipi_JDI_lcd_off+
+<6>[   54.428497] mipi_JDI_lcd_off, JDI display off command+
+<6>[   54.548095] mipi_JDI_lcd_off, JDI display off command-
+<6>[   54.548126] mipi_JDI_lcd_off-
+<4>[   54.548156] mipi_dsi_panel_power+, on=0
+<4>[   54.631072] mipi_dsi_panel_power-
+<7>[   54.636718] EXT_COMMON: hdmi_common_wta_hpd: '1' (unchanged)
+<6>[   54.637023] request_suspend_state: sleep (0->3) at 54638977882 (2013-12-04 06:18:21.189438759 UTC)
+<6>[   54.637145] early_suspend: call handlers
+<4>[   54.637237] [ektf3k]:[elan] elan_ktf3k_ts_suspend: enter
+<6>[   54.638854] active wake lock PowerManagerService.Broadcasts
+<6>[   54.638977] active wake lock PowerManagerService.WakeLocks
+<6>[   54.639038] active wake lock msm_otg
+<6>[   54.639160] PM: Syncing filesystems...
+<6>[   54.654296] sync done.
+<3>[   55.105224] wlan: [589:E :SME] sme_QosPmcDeviceStateUpdateInd: 7214: nothing to process in PMC state 6
+<3>[   55.105407] wlan: [671:E :HDD] hdd_conf_hostarpoffload: 
+<3>[   55.105407] 
+<3>[   55.105590] wlan: [671:E :HDD] hdd_conf_hostarpoffload: Enabled 
+<3>[   55.105590] 
+<5>[   63.844482] bq27541_get_psp status: Full ret= 0x0200
+<5>[   63.845214] smb345_charger: [smb345_config_thermal_limit] Bypass set HRD SFT limit=73
+<5>[   63.846343] bq27541_get_psp status: Full ret= 0x0200
+<5>[   63.846984] smb345_charger: [smb345_config_thermal_charging] temp=25, volt=4290000
+<5>[   63.848693] bq27541_get_psp voltage_now= 4297000 uV
+<5>[   63.850616] smb345_charger: [smb345_config_thermal_charging] Bypass set Float Volt=e8
+<5>[   63.851470] bq27541_get_capacity = 100% ret= 100
+<5>[   63.852416] smb345_charger: [smb345_config_thermal_charging] Bypass charger enable
+<5>[   63.853790] bq27541_get_psp temperature= 257 (0.1¢XC)
+<5>[   63.855743] bq27541_get_psp current = 0 mA
+<5>[   63.860809] bq27541_get_capacity = 100% ret= 100
+<5>[   63.862243] bq27541_get_psp voltage_now= 4297000 uV
+<5>[   63.863281] bq27541_get_psp temperature= 257 (0.1¢XC)
+<5>[   63.864471] bq27541_get_psp status: Full ret= 0x0200
+<4>[   70.453491] file trying to be opened is a COWCOPY file
+<4>[   70.453643] d_count: 2 
+<4>[   70.453735] return for vfs_unlink:0 
+<4>[   70.453796] d_count: 1 
+<4>[   70.453857] d_delete succeded 
+<4>[   70.454101] ------------[ cut here ]------------
+<2>[   70.454162] kernel BUG at fs/dcache.c:1406!
+<0>[   70.454223] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP ARM
+<4>[   70.454345] CPU: 0    Tainted: G        W     (3.4.0-g46120e4-dirty #135)
+<4>[   70.454467] PC is at d_instantiate+0x1c/0x5c
+<4>[   70.454528] LR is at ext4_add_nondir+0x34/0x60
+<4>[   70.454620] pc : [<c013a894>]    lr : [<c01acef8>]    psr: 20000013
+<4>[   70.454620] sp : eb50fd20  ip : 00000000  fp : c091d340
+<4>[   70.454772] r10: eb86cc18  r9 : c091d2c0  r8 : 00000fff
+<4>[   70.454895] r7 : 00000000  r6 : ed109fc0  r5 : eb83ba80  r4 : eb86cc18
+<4>[   70.454956] r3 : eb83baf8  r2 : eb86ca70  r1 : eb86cc18  r0 : eb83ba80
+<4>[   70.455078] Flags: nzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
+<4>[   70.455200] Control: 10c5787d  Table: ac8f006a  DAC: 00000015
+<4>[   70.455261] 
+<4>[   70.455261] PC: 0xc013a814:
+<4>[   70.455383] a814  e5b31070 e5812004 e5851068 e585306c e5842070 eb1ee438 e1a00005 e8bd8070
+<4>[   70.455993] a834  e92d4030 e24dd014 e1a04000 e1a00001 e1a05001 e58d100c eb05dcc2 e1a01000
+<4>[   70.456604] a854  e58d0008 e1a00005 ebffe023 e28d1010 e521000c e1a00004 ebffffd8 e28dd014
+<4>[   70.457244] a874  e8bd8030 e92d4038 e2803078 e5902078 e1a05000 e1a04001 e1520003 0a000000
+<4>[   70.457824] a894  e7f001f2 e3510000 0a000001 e281004c eb1ee37f e1a00005 e1a01004 ebfffa43
+<4>[   70.458465] a8b4  e3540000 0a000001 e284004c eb1ee412 e1a00005 e1a01004 e8bd4038 ea04a69f
+<4>[   70.459106] a8d4  e92d4070 e2803078 e5902078 e1a05000 e1a04001 e1520003 0a000000 e7f001f2
+<4>[   70.459716] a8f4  e3510000 0a000001 e281004c eb1ee368 e1a00005 e1a01004 ebfffa68 e3540000
+<4>[   70.460296] 
+<4>[   70.460296] LR: 0xc01ace78:
+<4>[   70.460449] ce78  ebfe3efa e1a00004 ebfe4293 e59f0034 e300194a e1a02005 eb00446a e376001c
+<4>[   70.461059] ce98  1a000004 e597001c e28d1004 ebffc242 e3500000 1affffba e1a00006 e28dd014
+<4>[   70.461700] ceb8  e8bd8ff0 3b9ac9ff c091d94b e92d40f8 e1a06000 e1a05001 e1a04002 ebfffd81
+<4>[   70.462341] ced8  e2507000 1a000008 e1a01004 e1a00006 ebffe69e e1a00005 e1a01004 ebfe365f
+<4>[   70.462921] cef8  e1a00004 ebfe412a ea000005 e1a00004 ebfe3ed6 e1a00004 ebfe4125 e1a00004
+<4>[   70.463531] cf18  ebfe426d e1a00007 e8bd80f8 e92d4ff0 e24dd014 e28d6010 e1a05000 e1a07001
+<4>[   70.464141] cf38  e1a08002 e300bfff e1a09003 e3a03000 e5263004 e595001c e59031e8 e5933044
+<4>[   70.464782] cf58  e5933060 e3130040 03a01017 13a0102a eb004534 e3700a01 e1a04000 81a0a000
+<4>[   70.465362] 
+<4>[   70.465362] SP: 0xeb50fca0:
+<4>[   70.465515] fca0  ed109fc0 00000000 c200c000 00000000 eb86cc18 c200c000 ed109fc0 c01a6834
+<4>[   70.466094] fcc0  c013a898 20000013 c000e154 00000000 e7100000 c000dee8 eb83ba80 eb86cc18
+<4>[   70.466674] fce0  eb86ca70 eb83baf8 eb86cc18 eb83ba80 ed109fc0 00000000 00000fff c091d2c0
+<4>[   70.467285] fd00  eb86cc18 c091d340 00000000 eb50fd20 c01acef8 c013a894 20000013 ffffffff
+<4>[   70.467895] fd20  ee32d880 eb86cc18 eb83ba80 c01acef8 eb86cce8 ed109fc0 ed1159f8 eb83ba80
+<4>[   70.468475] fd40  000081a4 c01ad108 00000000 00000000 00000000 00000000 ed1159f8 ed1159f8
+<4>[   70.469116] fd60  eb83ba80 00000000 000081a4 00000000 00000002 00000004 ec511000 c0132cb4
+<4>[   70.469726] fd80  ed1159f8 eb83ba80 edaec240 eb86c9c8 e39cf800 e39cf400 edbc7f10 c019f2b8
+<4>[   70.470367] 
+<4>[   70.470367] FP: 0xc091d2c0:
+<4>[   70.470489] d2c0  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.471099] d2e0  00000000 00000000 00000000 00000000 00000000 00000000 00000000 c01a6b7c
+<4>[   70.471679] d300  c01a4e24 c01450b4 c0144fa0 c01d9e74 c0145120 00000000 c01caab4 00000000
+<4>[   70.472320] d320  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.472961] d340  00000000 c019f790 c0126f18 c0127890 c00f3044 c019f4d8 00000000 00000000
+<4>[   70.473602] d360  c01a9fa0 00000000 c019f480 c019f178 00000000 c019f0d4 c019f860 00000000
+<4>[   70.474182] d380  00000000 00000000 00000000 00000000 00000000 00000000 c014cc74 c014c88c
+<4>[   70.474822] d3a0  00000000 c01c9f60 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.475463] 
+<4>[   70.475463] R0: 0xeb83ba00:
+<4>[   70.475585] ba00  0000008c 00000002 ed17f588 c4ec43ac ee002180 00c229e8 00000004 eb83ba24
+<4>[   70.476226] ba20  ed175338 34353331 006a6400 c09160b4 000200da c0eacf98 00000000 eb83ba3c
+<4>[   70.476867] ba40  eb83ba3c 00000000 00000001 00050005 c0918300 e3905000 00000000 00000000
+<4>[   70.477478] ba60  eb83ba60 eb83ba60 eb83b2e8 ee0021f0 eb83b8e8 eb83b8e8 ed1753e0 ed1753e0
+<4>[   70.478088] ba80  00000180 00000004 00000000 00000000 ee32eb80 d5ef3565 00000006 eb83baa4
+<4>[   70.478698] baa0  00000000 72756f73 c0006563 e3905000 eb83bb60 00000000 f0000001 00000001
+<4>[   70.479309] bac0  00000000 529ec90f 00000001 00090009 00000000 e39cf400 38fe14e7 00000000
+<4>[   70.479888] bae0  eb83bae0 eb83bae0 eb83b9e8 ee32ebf0 eb83baf0 eb83baf0 eb86ca70 eb86ca70
+<4>[   70.480499] 
+<4>[   70.480499] R1: 0xeb86cb98:
+<4>[   70.480621] cb98  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.481231] cbb8  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.481872] cbd8  0000001c 00000000 00000004 00080080 00000000 00020002 eb86cbf0 eb86cbf0
+<4>[   70.482482] cbf8  eb86cbf8 eb86cbf8 00000000 00000000 00000000 00000000 eb86cc10 eb86cc10
+<4>[   70.483032] cc18  000081a4 00000000 00000000 00000002 ffffffff ffffffff c091d2c0 e39cf400
+<4>[   70.483673] cc38  eb86cce8 eb40d180 00037c91 00000001 00000000 529ec93c 3b9660f9 529ec93c
+<4>[   70.484313] cc58  3b9660f9 529ec93c 3b9660f9 00020002 00000000 00000000 00000000 00000000
+<4>[   70.484893] cc78  00000000 00000000 00000000 00000008 00000001 00000000 eb86cc90 eb86cc90
+<4>[   70.485534] 
+<4>[   70.485534] R2: 0xeb86c9f0:
+<4>[   70.485687] c9f0  00037c90 00000001 00000000 529ec35e 0585bbac 529ec35e 0585bbac 529ec93c
+<4>[   70.486297] ca10  3b9660f9 00050005 00000000 00000000 00000008 00000000 00000006 00000000
+<4>[   70.486907] ca30  00000000 00000000 00000001 00000000 eb86ca40 eb86ca40 00000000 00000000
+<4>[   70.487548] ca50  00000000 c4f71010 eb86ca58 eb86ca58 eb86ca60 eb86ca60 eb86c818 eb86ccb8
+<4>[   70.488128] ca70  eb83baf8 eb83baf8 00000001 0000000c 00000001 00000000 00000000 00000001
+<4>[   70.488769] ca90  c091d340 00000000 eb86c9c8 00000000 00000020 00000000 00000000 00000000
+<4>[   70.489349] cab0  00000000 00010001 eb86cab8 eb86cab8 00000001 00000000 eb86cac8 eb86cac8
+<4>[   70.489990] cad0  00000000 00000000 00000000 c091d4c0 000200da edf4efb8 00000000 eb86caec
+<4>[   70.490600] 
+<4>[   70.490600] R3: 0xeb83ba78:
+<4>[   70.490753] ba78  ed1753e0 ed1753e0 00000180 00000004 00000000 00000000 ee32eb80 d5ef3565
+<4>[   70.491333] ba98  00000006 eb83baa4 00000000 72756f73 c0006563 e3905000 eb83bb60 00000000
+<4>[   70.491943] bab8  f0000001 00000001 00000000 529ec90f 00000001 00090009 00000000 e39cf400
+<4>[   70.492523] bad8  38fe14e7 00000000 eb83bae0 eb83bae0 eb83b9e8 ee32ebf0 eb83baf0 eb83baf0
+<4>[   70.493133] baf8  eb86ca70 eb86ca70 000000c0 00000002 00000000 c4ed3da8 ee36e700 10df8542
+<4>[   70.493713] bb18  00000005 eb83bb24 eb86c528 6f6d6863 eb830064 eb83bb28 eb83bb30 eb83bb30
+<4>[   70.494323] bb38  eb82dee8 c016c324 00000000 0000000a 00000000 000a000a 00000000 ed540000
+<4>[   70.494934] bb58  c1048ec0 00000000 ed3781e0 ed54008c ed1491e8 ee36e770 eb83bb70 eb83bb70
+<4>[   70.495544] 
+<4>[   70.495544] R4: 0xeb86cb98:
+<4>[   70.495666] cb98  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.496276] cbb8  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.496887] cbd8  0000001c 00000000 00000004 00080080 00000000 00020002 eb86cbf0 eb86cbf0
+<4>[   70.497528] cbf8  eb86cbf8 eb86cbf8 00000000 00000000 00000000 00000000 eb86cc10 eb86cc10
+<4>[   70.498168] cc18  000081a4 00000000 00000000 00000002 ffffffff ffffffff c091d2c0 e39cf400
+<4>[   70.498809] cc38  eb86cce8 eb40d180 00037c91 00000001 00000000 529ec93c 3b9660f9 529ec93c
+<4>[   70.499389] cc58  3b9660f9 529ec93c 3b9660f9 00020002 00000000 00000000 00000000 00000000
+<4>[   70.500030] cc78  00000000 00000000 00000000 00000008 00000001 00000000 eb86cc90 eb86cc90
+<4>[   70.500640] 
+<4>[   70.500671] R5: 0xeb83ba00:
+<4>[   70.500793] ba00  0000008c 00000002 ed17f588 c4ec43ac ee002180 00c229e8 00000004 eb83ba24
+<4>[   70.501403] ba20  ed175338 34353331 006a6400 c09160b4 000200da c0eacf98 00000000 eb83ba3c
+<4>[   70.502044] ba40  eb83ba3c 00000000 00000001 00050005 c0918300 e3905000 00000000 00000000
+<4>[   70.502624] ba60  eb83ba60 eb83ba60 eb83b2e8 ee0021f0 eb83b8e8 eb83b8e8 ed1753e0 ed1753e0
+<4>[   70.503265] ba80  00000180 00000004 00000000 00000000 ee32eb80 d5ef3565 00000006 eb83baa4
+<4>[   70.503906] baa0  00000000 72756f73 c0006563 e3905000 eb83bb60 00000000 f0000001 00000001
+<4>[   70.504486] bac0  00000000 529ec90f 00000001 00090009 00000000 e39cf400 38fe14e7 00000000
+<4>[   70.505096] bae0  eb83bae0 eb83bae0 eb83b9e8 ee32ebf0 eb83baf0 eb83baf0 eb86ca70 eb86ca70
+<4>[   70.505706] 
+<4>[   70.505706] R6: 0xed109f40:
+<4>[   70.505828] 9f40  00000029 ed109f40 ed109f30 00000000 00260034 00000000 00001000 ef501000
+<4>[   70.506469] 9f60  ed109f48 c014f584 00000000 ed109f6c ed109f6c 00000000 ed109f60 00000000
+<4>[   70.507080] 9f80  00000029 ed109f80 c1853000 00000000 ed109f78 00000000 00001000 ef500000
+<4>[   70.507629] 9fa0  ed0ec200 c014f584 ed109f90 ed109fac ed109fac 00000000 00000000 00000000
+<4>[   70.508270] 9fc0  ed10ad80 00000029 00000001 00000000 00000000 00000000 00000000 00000002
+<4>[   70.508880] 9fe0  00000000 00000000 00000000 ed109fec ed109fec 00000000 00000000 00000000
+<4>[   70.509460] a000  ed10acc0 0002bd85 00000006 000002b6 00000000 00000000 00000000 00000000
+<4>[   70.510040] a020  00000000 00000000 00000000 00000000 00000000 ed10a034 ed10a034 00020002
+<4>[   70.510681] 
+<4>[   70.510681] R9: 0xc091d240:
+<4>[   70.510803] d240  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.511413] d260  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.512054] d280  00000000 00000000 c00f2638 c01a9004 00000000 00000000 00000000 00000000
+<4>[   70.512664] d2a0  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.513244] d2c0  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.513885] d2e0  00000000 00000000 00000000 00000000 00000000 00000000 00000000 c01a6b7c
+<4>[   70.514526] d300  c01a4e24 c01450b4 c0144fa0 c01d9e74 c0145120 00000000 c01caab4 00000000
+<4>[   70.515136] d320  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.515747] 
+<4>[   70.515747] R10: 0xeb86cb98:
+<4>[   70.515899] cb98  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.516510] cbb8  00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+<4>[   70.517120] cbd8  0000001c 00000000 00000004 00080080 00000000 00020002 eb86cbf0 eb86cbf0
+<4>[   70.517730] cbf8  eb86cbf8 eb86cbf8 00000000 00000000 00000000 00000000 eb86cc10 eb86cc10
+<4>[   70.518341] cc18  000081a4 00000000 00000000 00000002 ffffffff ffffffff c091d2c0 e39cf400
+<4>[   70.518920] cc38  eb86cce8 eb40d180 00037c91 00000001 00000000 529ec93c 3b9660f9 529ec93c
+<4>[   70.519561] cc58  3b9660f9 529ec93c 3b9660f9 00020002 00000000 00000000 00000000 00000000
+<4>[   70.520172] cc78  00000000 00000000 00000000 00000008 00000001 00000000 eb86cc90 eb86cc90
+<0>[   70.520751] Process hw6_test (pid: 1354, stack limit = 0xeb50e2f0)
+<0>[   70.520843] Stack: (0xeb50fd20 to 0xeb510000)
+<0>[   70.520935] fd20: ee32d880 eb86cc18 eb83ba80 c01acef8 eb86cce8 ed109fc0 ed1159f8 eb83ba80
+<0>[   70.521026] fd40: 000081a4 c01ad108 00000000 00000000 00000000 00000000 ed1159f8 ed1159f8
+<0>[   70.521148] fd60: eb83ba80 00000000 000081a4 00000000 00000002 00000004 ec511000 c0132cb4
+<0>[   70.521270] fd80: ed1159f8 eb83ba80 edaec240 eb86c9c8 e39cf800 e39cf400 edbc7f10 c019f2b8
+<0>[   70.521362] fda0: 00000004 ec2cbb80 00000000 00000001 00000000 c02667f0 eb50fddc 00000000
+<0>[   70.521484] fdc0: 00040006 c0269424 00000000 c013b5c8 00000000 00000000 00000000 00000000
+<0>[   70.521606] fde0: 00000000 edaec248 eb86c9c8 edaec240 eb86c9c8 00000000 00000000 271ae91c
+<0>[   70.521667] fe00: edbc7f10 eb83ba80 edaec240 eb86c9c8 c019f178 00000000 eb86ca8c c0125ab8
+<0>[   70.521789] fe20: 00000000 edaec240 eb50fef8 ec2cbb80 00000000 00000000 00000000 c0126850
+<0>[   70.521911] fe40: ec2cbb80 eb50fe2c 00000000 eb50fef8 eb86c9c8 00000000 00020002 c01334f0
+<0>[   70.522033] fe60: ee32eb80 c02670cc c026708c 00000026 00000006 eb86c9c8 ec511000 eb50fef8
+<0>[   70.522094] fe80: eb50e000 eb50ff78 ffffff9c c000e3e8 ec511000 00000000 bea9bb6c c01335b8
+<0>[   70.522216] fea0: eb50feb4 c0116718 00000000 eb50fed4 00000000 00000000 edbc7f10 eb83ba80
+<0>[   70.522338] fec0: 000b6e8e ebd823c0 00000015 eb50ff78 00000001 ec511000 ffffff9c c000e3e8
+<0>[   70.522460] fee0: eb50e000 00000000 bea9bb6c c01338a4 00000041 b6e8e000 edbc7f10 eb83ba80
+<0>[   70.522521] ff00: d5ef3565 00000006 ec511010 e391b0d0 ee002080 eb86c9c8 00000101 00000002
+<0>[   70.522644] ff20: 00000000 00000000 000099e4 00000000 00000000 eb50e000 ec541ec0 ed61dc00
+<0>[   70.522766] ff40: ed61dc40 00000000 00020002 00020002 00000000 00000000 ec511000 00000003
+<0>[   70.522827] ff60: ffffff9c ec511000 00000001 c0126bec eb50e000 00000000 00020002 ec9a0000
+<0>[   70.522949] ff80: 00000026 00000100 00001000 bea9bb74 bea9bb7c 00000001 00000005 c000e3e8
+<0>[   70.523071] ffa0: 00000000 c000e240 bea9bb74 bea9bb7c 000099e4 00020002 00000000 00000000
+<0>[   70.523193] ffc0: bea9bb74 bea9bb7c 00000001 00000005 000084a1 00000000 00000000 bea9bb6c
+<0>[   70.523254] ffe0: b6efbfd8 bea9bb20 b6ee0449 b6ecf0d0 600b0010 000099e4 00000000 00000000
+<4>[   70.523376] [<c013a894>] (d_instantiate+0x1c/0x5c) from [<c01acef8>] (ext4_add_nondir+0x34/0x60)
+<4>[   70.523498] [<c01acef8>] (ext4_add_nondir+0x34/0x60) from [<c01ad108>] (ext4_create+0xcc/0x114)

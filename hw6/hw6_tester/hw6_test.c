@@ -7,10 +7,13 @@
 int main()
 {
   int fd;
-  int ret;
+  //int ret;
   
-  ret = syscall(378, "/data/local/tmp/hw5_test","/data/local/tmp/dest");
-  printf("return value :  %d\n", ret );
-  fd = open("/data/local/tmp/hw5_test", O_RDWR);
+  //ret =syscall(378, "/data/local/tmp/source","/data/local/tmp/desti");
+  //syscall(378, "/data/local/tmp/source","/data/local/tmp/dest1");
+  //syscall(378, "/data/local/tmp/src","/data/local/tmp/dest2");
+  //printf("return value :  %d\n", ret );
+  fd = open("/data/local/tmp/source", O_RDWR);
+  close(fd);
   return 0;
 }

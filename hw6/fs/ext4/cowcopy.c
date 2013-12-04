@@ -23,8 +23,9 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 	struct path src_path,dest_path;
 	struct dentry *dest_dentry;
 	struct inode *src_inode;
-	int error,result;
+	int error;
 	int ret;
+	int result;
 	int testvalue = 1;
 	int readtestvalue = 0;
 
@@ -61,11 +62,6 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 
 
 		// if the file is open for writing, then return an EPERM
-		if(src_inode->i_writecount.counter != 0)
-		{
-			printk("file already open for writing\n");
-			return (-EPERM);
-		}
 		printk("file not open for writing, hence can be copied\n");
 
 		// if the  dest exists, then return EEXISTS
@@ -91,25 +87,29 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 		
 
 		// lazy copy - create a hard link
-		if(src_inode->i_op == NULL) 
+		result = vfs_link(src_path.dentry,dest_path.dentry->d_inode,dest_dentry);
+		printk("hard link creation status : %d \n", result);
+
+		dput(dest_dentry);
+		mutex_unlock(&dest_path.dentry->d_inode->i_mutex);
+		path_put(&dest_path);
+		path_put(&src_path);
+		
+		if(result == 0 )
 		{
-			printk("i_op is not hooked into anything\n");
+			ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_CREATE);
+			if( ret != 0)
+			{
+				ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_REPLACE);
+			}
+			printk("ext4_xattr_set return value: %d\n", ret);
+			ext4_xattr_get(src_inode, EXT4_XATTR_INDEX_USER, "COW", &readtestvalue, 4);
+			printk("This should be 1: %u\n", readtestvalue);
 		}
 		else
 		{
-			result = vfs_link(src_path.dentry,dest_path.dentry->d_inode,dest_dentry);
-			printk("hard link creation status : %d \n", result);
+			return result;
 		}
-
-		ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_CREATE);
-		if( ret != 0)
-		{
-			ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_REPLACE);
-		}
-		printk("return value: %d\n", ret);
-		ext4_xattr_get(src_inode, EXT4_XATTR_INDEX_USER, "COW", &readtestvalue, 4);
-		printk("This should be 1: %u\n", readtestvalue);
-
 	}
 	else
 	{
