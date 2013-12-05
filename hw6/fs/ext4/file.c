@@ -23,6 +23,7 @@
 #include <linux/jbd2.h>
 #include <linux/mount.h>
 #include <linux/path.h>
+#include <linux/fsnotify.h>
 #include <linux/quotaops.h>
 #include "ext4.h"
 #include "ext4_jbd2.h"
@@ -165,7 +166,6 @@ static int ext4_file_open(struct inode * inode, struct file * filp)
 	struct ext4_inode_info *ei = EXT4_I(inode);
 	struct vfsmount *mnt = filp->f_path.mnt;
 	struct path path;
-	//struct dentry *current_dentry;
 	char buf[64], *cp;
 	int cowcopyflag = 0;
 	int resetflag = 0;
@@ -184,17 +184,24 @@ static int ext4_file_open(struct inode * inode, struct file * filp)
 
 		filp->f_path.dentry->d_inode = NULL;
 		list_del_init(&filp->f_path.dentry->d_alias);
-		
 
 		// alloc inode for new file
+
 		ret = vfs_create(filp->f_path.dentry->d_parent->d_inode , filp->f_path.dentry , mode , NULL );
 		printk("return value for vfs_create: %d \n", ret);
 
-		ext4_xattr_set(inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, 0);
-		ext4_xattr_set(filp->f_path.dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, 0);
-	
-		// readpages from src and write to dest ->  and use readpages and write pages  
+		if(inode->i_nlink == 1)
+		{
+			ext4_xattr_set(inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_REPLACE);
+		}
+		ext4_xattr_set(filp->f_path.dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_CREATE);
 
+		inode = filp->f_path.dentry->d_inode;
+		sb = filp->f_path.dentry->d_inode->i_sb;
+		sbi = EXT4_SB(filp->f_path.dentry->d_inode->i_sb);
+		ei = EXT4_I(filp->f_path.dentry->d_inode);
+
+		// readpages from src and write to dest ->  and use readpages and write pages  
 	}
 
 	if (unlikely(!(sbi->s_mount_flags & EXT4_MF_MNTDIR_SAMPLED) &&
@@ -236,6 +243,7 @@ static int ext4_file_open(struct inode * inode, struct file * filp)
 		spin_unlock(&inode->i_lock);
 		if (unlikely(jinode != NULL))
 			jbd2_free_inode(jinode);
+
 	}
 	return dquot_file_open(inode, filp);
 }

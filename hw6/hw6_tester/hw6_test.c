@@ -4,19 +4,30 @@
 #include <sys/syscall.h>
 #include <fcntl.h>
 
-int main()
+int main(int argv, char **argc)
 {
   int fd;
   int ret;
   
+  int option = (int)atoi(argc[1]);
 
-
-  ret =syscall(378, "/data/local/tmp/source","/data/local/tmp/dest1");
-  syscall(378, "/data/local/tmp/source","/data/local/tmp/dest2");
-  //syscall(378, "/data/local/tmp/src","/data/local/tmp/dest2");
-  printf("return value :  %d\n", ret );
-  fd = open("/data/local/tmp/source", O_WRONLY);
-  write(fd,"wassup world",13);
-  close(fd);
+  if (option == 1)
+  {
+  	ret =syscall(378, "/data/local/tmp/a","/data/local/tmp/b");
+  	syscall(378, "/data/local/tmp/a","/data/local/tmp/c");
+  	//syscall(378, "/data/local/tmp/a","/data/local/tmp/d");
+  	printf("COWCOPY return value :  %d\n", ret );
+  }
+  else
+  {
+  	  fd = open("/data/local/tmp/a", O_WRONLY);
+  	  write(fd,"world",6);
+  	  close(fd);
+  	  printf("file descriptor :  %d\n", fd );	
+  }
+  //ret =syscall(378, "/data/local/tmp/a","/data/local/tmp/b");
+  //syscall(378, "/data/local/tmp/a","/data/local/tmp/c");
+  //syscall(378, "/data/local/tmp/a","/data/local/tmp/d");
+  //printf("return value :  %d\n", ret );
   return 0;
 }

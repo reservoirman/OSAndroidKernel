@@ -1,0 +1,12 @@
+all 3 files are linked - inode X   X -> cowcopyflag  = 1  			
+open(source) 
+
+source -> unlink -> inode->i_nlink -- > vfs_create - > busy    X = 1          source -> inode = Y -> cowcopyflag  = 0
+							2
+linked dest1,dest2
+open(dest1)
+dest1-> unlink -> inode->i_nlink -- > vfs_create - > busy 
+							1								   X = 0		  dest1 -> inode = Z -> cowcopyflag  = 0
+
+dest2 
+open(dest2) its no more a cowcopy file ... so on open will not give busy	  dest2 -> indoe = X -> cowcopyflag  = 0

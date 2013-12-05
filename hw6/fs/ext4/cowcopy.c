@@ -27,10 +27,9 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 	int ret;
 	int result;
 	int testvalue = 1;
-	int readtestvalue = 0;
 
 	error = user_path(src, &src_path);
-	
+
 	// error value indicates whether there is any error while opening the file. 0 --> no error. 
 	if (error == 0)
 	{
@@ -56,7 +55,10 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 
 
 		// if the file is open for writing, then return an EPERM
-		printk("file not open for writing, hence can be copied\n");
+		if(src_inode->i_writecount.counter != 0)
+ 		{
+ 			return (-EPERM);
+ 		}
 
 		// if the  dest exists, then return EEXISTS
 		error = user_path(dest, &dest_path);
@@ -76,16 +78,17 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 		result = vfs_link(src_path.dentry,dest_path.dentry->d_inode,dest_dentry);
 		printk("hard link creation status : %d \n", result);
 
-		dput(dest_dentry);
 		mutex_unlock(&dest_path.dentry->d_inode->i_mutex);
-		path_put(&dest_path);
-		path_put(&src_path);
-
-
+		
 		if(result == 0 )
 		{
-			ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, 0);
+			ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_CREATE);
+			if( ret != 0)
+			{
+				ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_REPLACE);
+			}
 			printk("ext4_xattr_set return value: %d\n", ret);
+
 		}
 		else
 		{
