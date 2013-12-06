@@ -972,7 +972,7 @@ struct file *file_open_root(struct dentry *dentry, struct vfsmount *mnt,
 EXPORT_SYMBOL(file_open_root);
 
 
-int cowcopy(struct inode **inode, struct file *filp)
+int cowcopy(struct inode **inode, struct dentry *dentry)
 {
 	int resetflag = 0;
 	int ret=-1,ret_unlink=-1;
@@ -980,25 +980,29 @@ int cowcopy(struct inode **inode, struct file *filp)
 
 	printk("file trying to be opened is a COWCOPY file\n");
 	// unlink from previous inode
-	ret_unlink= vfs_unlink(filp->f_path.dentry->d_parent->d_inode , filp->f_path.dentry);
+	ret_unlink= vfs_unlink(dentry->d_parent->d_inode , dentry);
 	printk("return for vfs_unlink:%d \n",ret_unlink);
 
-	filp->f_path.dentry->d_inode = NULL;
-	list_del_init(&filp->f_path.dentry->d_alias);
+	dentry->d_inode = NULL;
+	list_del_init(&dentry->d_alias);
 	// alloc inode for new file
 
-	ret = vfs_create(filp->f_path.dentry->d_parent->d_inode , filp->f_path.dentry , mode , NULL );
+	ret = vfs_create(dentry->d_parent->d_inode , dentry , mode , NULL );
 	printk("return value for vfs_create: %d \n", ret);
 
-	*inode = filp->f_path.dentry->d_inode;
+	*inode = dentry->d_inode;
 	if(inode[0]->i_nlink == 1)
 	{
 		ext4_xattr_set(*inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_REPLACE);
 	}
-	ext4_xattr_set(filp->f_path.dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_CREATE);
+	ext4_xattr_set(dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_CREATE);
 
-	return ret;
 	// readpages from src and write to dest ->  and use readpages and write pages  
+	
+
+
+	
+	return ret;
 }
 
 long do_sys_open(int dfd, const char __user *filename, int flags, umode_t mode)
@@ -1011,33 +1015,45 @@ long do_sys_open(int dfd, const char __user *filename, int flags, umode_t mode)
 	int cowcopyflag=0;
 	struct inode *inode;
 
-	if (!IS_ERR(tmp)) {
+	if (!IS_ERR(tmp)) 
+	{
 		fd = get_unused_fd_flags(flags);
-		if (fd >= 0) {
-			struct file *f = do_filp_open(dfd, tmp, &op, lookup);
-			if (IS_ERR(f)) {
-				put_unused_fd(fd);
-				fd = PTR_ERR(f);
-			} else {
-
-				if( f->f_path.dentry->d_inode != NULL)
+		if (fd >= 0) 
+		{
+			struct file *f; 
+			struct path cow_path;
+			int error = -1;
+			error = user_path(filename, &cow_path);
+   			if (error == 0)
+  			{
+  				inode = cow_path.dentry->d_inode;
+				if( inode != NULL)
 				{	
-					inode = f->f_path.dentry->d_inode;
 					if(strcmp(inode->i_sb->s_type->name,"ext4") == 0)
 					{
 						ret = ext4_xattr_get(inode, EXT4_XATTR_INDEX_USER, "COW", &cowcopyflag, 4);
 						if( ret > 0 && cowcopyflag ==1)
 						{
-							if( ((f->f_flags & O_RDWR) == 2) || ( (f->f_flags & O_WRONLY) == 1 ))
+							if( ((flags & O_RDWR) == 2) || ( (flags & O_WRONLY) == 1 ))
 							{
-								printk("inode before: %p \n", f->f_path.dentry->d_inode);
-								ret = cowcopy(&inode,f);
-								printk("inode after: %p \n", f->f_path.dentry->d_inode);
+								printk("inode before: %p \n", cow_path.dentry->d_inode);
+								ret = cowcopy(&inode,cow_path.dentry);
+								printk("inode after: %p \n", cow_path.dentry->d_inode);
 								printk("cowcopy return value  =  vfs_create value: %d \n", ret);
 							}
 						}
 					}
 				}
+			}
+
+			f = do_filp_open(dfd, tmp, &op, lookup);
+			if (IS_ERR(f)) 
+			{
+				put_unused_fd(fd);
+				fd = PTR_ERR(f);
+			} 
+			else 
+			{
 				fsnotify_open(f);
 				fd_install(fd, f);
 			}
