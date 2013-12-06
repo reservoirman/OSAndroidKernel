@@ -162,7 +162,7 @@ index cb70f18..535856a 100644
  	return dquot_file_open(inode, filp);
  }
 diff --git a/fs/open.c b/fs/open.c
-index 5720854..6a4ef80 100644
+index 5720854..b5069fa 100644
 --- a/fs/open.c
 +++ b/fs/open.c
 @@ -30,8 +30,10 @@
@@ -177,7 +177,7 @@ index 5720854..6a4ef80 100644
  
  int do_truncate(struct dentry *dentry, loff_t length, unsigned int time_attrs,
  	struct file *filp)
-@@ -970,21 +972,131 @@ struct file *file_open_root(struct dentry *dentry, struct vfsmount *mnt,
+@@ -970,21 +972,134 @@ struct file *file_open_root(struct dentry *dentry, struct vfsmount *mnt,
  }
  EXPORT_SYMBOL(file_open_root);
  
@@ -200,6 +200,9 @@ index 5720854..6a4ef80 100644
 +		memcpy(kmap(write_page), kmap(read_page), read_inode->i_size);			// writes to the page cache
 +
 +		SetPageUptodate(write_page);
++
++		kunmap(read_page);										// unmap page from kernel space
++		kunmap(write_page);
 +		
 +		unlock_page(read_page);							// used to protect grab_cache_page
 +		unlock_page(write_page);						// used to protect grab_cache_page

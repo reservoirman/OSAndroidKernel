@@ -991,6 +991,9 @@ int cowcopy_pages(struct inode *read_inode, struct inode *write_inode)
 		memcpy(kmap(write_page), kmap(read_page), read_inode->i_size);			// writes to the page cache
 
 		SetPageUptodate(write_page);
+
+		kunmap(read_page);										// unmap page from kernel space
+		kunmap(write_page);
 		
 		unlock_page(read_page);							// used to protect grab_cache_page
 		unlock_page(write_page);						// used to protect grab_cache_page
