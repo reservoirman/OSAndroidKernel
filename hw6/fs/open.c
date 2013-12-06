@@ -972,54 +972,39 @@ struct file *file_open_root(struct dentry *dentry, struct vfsmount *mnt,
 }
 EXPORT_SYMBOL(file_open_root);
 
-
+// copies pages from old_inode to new_inode
 int cowcopy_pages(struct inode *read_inode, struct inode *write_inode)
 {
 	struct address_space *read_page_cache, *write_page_cache;
 	struct page *read_page,*write_page;
 	int i = 0;
-	//char testoutput[10];
 	int wpresult = -1;
 	read_page_cache = read_inode->i_mapping;
 	write_page_cache = write_inode->i_mapping;
-	printk("nrpages: %lu \n", read_page_cache->nrpages);
+	//printk("nrpages: %lu \n", read_page_cache->nrpages);
 
 	for (i = 0; i < read_page_cache->nrpages; i++)
 	{
+		read_page = grab_cache_page(read_page_cache,i);							// get page from cache and if not in cache it creates one
+		write_page = grab_cache_page(write_page_cache,i);						// get page from cache and if not in cache it creates one
 
-		/*page = find_get_page(read_page_cache, i);
-		if (page == NULL)
-		{
-			
-			pages = find_or_create_page(read_page_cache, i, mapping_gfp_mask(read_page_cache));
-			error = mapping->a_ops->readpage(file, page);
-		}
-		*/
-		printk("TG: we've entered the for loop to read/write pages\n");
-		read_page = grab_cache_page(read_page_cache,i);
-		write_page = grab_cache_page(write_page_cache,i);
-		memcpy(kmap(write_page), kmap(read_page), read_inode->i_size);
-			//memcpy(testoutput, kmap(write_page), 10);
-			//testoutput[9] = '\0';
-			//printk("TG: Contents of write_page: %s\n", testoutput);
+		memcpy(kmap(write_page), kmap(read_page), read_inode->i_size);			// writes to the page cache
+
 		SetPageUptodate(write_page);
-		//set_page_dirty(write_page);
-		SetPageDirty(write_page);
-		unlock_page(read_page);
-		unlock_page(write_page);
+		
+		unlock_page(read_page);							// used to protect grab_cache_page
+		unlock_page(write_page);						// used to protect grab_cache_page
 	}
-	ext4_mark_super_dirty(write_inode->i_sb);
-	mark_inode_dirty(write_inode);
-	//spin_unlock(&write_inode->i_lock);
+
 	mutex_lock(&write_inode->i_mutex);
-	wpresult = write_inode_now(write_inode, 0);
-	//spin_lock(&write_inode->i_lock);
+	wpresult = write_inode_now(write_inode, 0);			// writes to the disk, protected bu mutuex
 	mutex_unlock(&write_inode->i_mutex);
-	printk("Dirty page written? Return = %d\n", wpresult);
 
 	return 0;
 }
 
+
+// unlinks the file being opened and creates a new inode for this file.
 int cowcopy(struct inode **inode, struct dentry *dentry)
 {
 	int resetflag = 0;
@@ -1029,14 +1014,14 @@ int cowcopy(struct inode **inode, struct dentry *dentry)
 
 	// unlink from previous inode
 	ret_unlink= vfs_unlink(dentry->d_parent->d_inode , dentry);\
-	printk("return for vfs_unlink:%d \n",ret_unlink);
+	//printk("return for vfs_unlink:%d \n",ret_unlink);
 
 	dentry->d_inode = NULL;
 	list_del_init(&dentry->d_alias);
+	
 	// alloc inode for new file
-
 	ret = vfs_create(dentry->d_parent->d_inode , dentry , mode , NULL );
-	printk("return value for vfs_create: %d \n", ret);
+	//printk("return value for vfs_create: %d \n", ret);
 
 	read_inode = *inode;
 
@@ -1046,21 +1031,21 @@ int cowcopy(struct inode **inode, struct dentry *dentry)
 	dentry->d_inode->i_flags = inode[0]->i_flags;			//copying the iflags of the old inode
 	dentry->d_inode->i_writecount.counter++;				//adding a writer to the new inode
 	dentry->d_inode->i_count.counter++;						//adding a reference to the new inode
-	inode[0]->i_writecount.counter--;						//removing a writer from the old inode
+	inode[0]->i_writecount.counter = 0;						//removing a writer from the old inode
 	inode[0]->i_count.counter--;							//removing a reference to the old inode
 
-	if(inode[0]->i_nlink == 1)			//if the old inode has no hardlinks remaining, it's no longer a COW file
+	if(inode[0]->i_nlink == 1)								//if the old inode has no hardlinks remaining, it's no longer a COW file
 	{
 		ext4_xattr_set(*inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_REPLACE);
 	}
 
 	//the critical reassignment:
 	*inode = dentry->d_inode;
-	ext4_xattr_set(dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_CREATE);
+	ext4_xattr_set(dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_CREATE);			// set the xattr of new inode to 0
 
 	// readpages from src and write to dest ->  and use readpages and write pages  
 	ret_cowcopy_pages = cowcopy_pages(read_inode,*inode);
-	printk("cowcopy_pages return value: %d \n", ret_cowcopy_pages);
+	//printk("cowcopy_pages return value: %d \n", ret_cowcopy_pages);
 
 	return ret;
 }
@@ -1083,21 +1068,21 @@ long do_sys_open(int dfd, const char __user *filename, int flags, umode_t mode)
 			struct file *f; 
 			struct path cow_path;
 			int error = -1;
-			error = user_path(filename, &cow_path);
+			error = user_path(filename, &cow_path);				// check if path exists
    			if (error == 0)
   			{
   				inode = cow_path.dentry->d_inode;
 				if( inode != NULL)
 				{	
-					if(strcmp(inode->i_sb->s_type->name,"ext4") == 0)
+					if(strcmp(inode->i_sb->s_type->name,"ext4") == 0)		// call cowcopy only if file trying to be opened belongs to the ext4 file system.
 					{
 						ret = ext4_xattr_get(inode, EXT4_XATTR_INDEX_USER, "COW", &cowcopyflag, 4);
-						if( ret > 0 && cowcopyflag ==1)
+						if( ret > 0 && cowcopyflag ==1)						// check if file is a cowcopy file
 						{
 							if( ((flags & O_RDWR) == O_RDWR) || ( (flags & O_WRONLY) == O_WRONLY ) || ((flags & O_APPEND) == O_APPEND) || ((flags & O_TRUNC) == O_TRUNC))
 							{
 								ret = cowcopy(&inode,cow_path.dentry);
-								printk("cowcopy return value  =  vfs_create value: %d \n", ret);
+								//printk("cowcopy return value  =  vfs_create value: %d \n", ret);
 							}
 						}
 					}

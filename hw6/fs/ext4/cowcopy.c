@@ -76,7 +76,7 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 	
 		// lazy copy - create a hard link
 		result = vfs_link(src_path.dentry,dest_path.dentry->d_inode,dest_dentry);
-		printk("hard link creation status : %d \n", result);
+		//printk("hard link creation status : %d \n", result);
 
 		mutex_unlock(&dest_path.dentry->d_inode->i_mutex);
 		
@@ -87,8 +87,7 @@ asmlinkage int sys_ext4_cowcopy(const char __user *src, const char __user *dest)
 			{
 				ret = ext4_xattr_set(src_inode, EXT4_XATTR_INDEX_USER, "COW", &testvalue, 4, XATTR_REPLACE);
 			}
-			printk("ext4_xattr_set return value: %d\n", ret);
-
+			//printk("ext4_xattr_set return value: %d\n", ret);
 		}
 		else
 		{
