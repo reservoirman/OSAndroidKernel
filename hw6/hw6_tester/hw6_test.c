@@ -20,7 +20,7 @@ int main(int argv, char **argc)
   }
   else
   {
-  	  fd = open("/data/local/tmp/a", O_WRONLY);
+  	  fd = open("/data/local/tmp/b", O_WRONLY);
   	  //write(fd,"world",6);
   	  close(fd);
   	  printf("file descriptor :  %d\n", fd );	

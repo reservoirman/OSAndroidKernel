@@ -30,6 +30,7 @@
 #include <linux/fs_struct.h>
 #include <linux/ima.h>
 #include <linux/dnotify.h>
+#include <linux/highmem.h>
 #include "internal.h"
 #include "ext4/ext4.h"
 #include "ext4/xattr.h"
@@ -972,10 +973,43 @@ struct file *file_open_root(struct dentry *dentry, struct vfsmount *mnt,
 EXPORT_SYMBOL(file_open_root);
 
 
+int cowcopy_pages(struct inode *read_inode, struct inode *write_inode)
+{
+	struct address_space *read_page_cache, *write_page_cache;
+	struct page *read_page,*write_page;
+	int i = 0;
+	read_page_cache = read_inode->i_mapping;
+	write_page_cache = write_inode->i_mapping;
+	printk("nrpages: %lu \n", read_page_cache->nrpages);
+
+	for (i = 0; i < read_page_cache->nrpages; i++)
+	{
+
+		/*page = find_get_page(read_page_cache, i);
+		if (page == NULL)
+		{
+			
+			pages = find_or_create_page(read_page_cache, i, mapping_gfp_mask(read_page_cache));
+			error = mapping->a_ops->readpage(file, page);
+		}
+		*/
+		read_page = grab_cache_page(read_page_cache,i);
+		write_page = grab_cache_page(write_page_cache,i);
+		memcpy(kmap(write_page), kmap(read_page), PAGE_SIZE);
+		SetPageUptodate(write_page);
+		unlock_page(read_page);
+		unlock_page(write_page);
+	}
+	printk("for loop successfully exectued \n");
+
+	return 0;
+}
+
 int cowcopy(struct inode **inode, struct dentry *dentry)
 {
 	int resetflag = 0;
-	int ret=-1,ret_unlink=-1;
+	struct inode *read_inode;
+	int ret = -1 , ret_unlink = -1 , ret_cowcopy_pages = -1;
 	umode_t mode = 0644;
 
 	printk("file trying to be opened is a COWCOPY file\n");
@@ -990,6 +1024,7 @@ int cowcopy(struct inode **inode, struct dentry *dentry)
 	ret = vfs_create(dentry->d_parent->d_inode , dentry , mode , NULL );
 	printk("return value for vfs_create: %d \n", ret);
 
+	read_inode = *inode;
 	*inode = dentry->d_inode;
 	if(inode[0]->i_nlink == 1)
 	{
@@ -998,10 +1033,9 @@ int cowcopy(struct inode **inode, struct dentry *dentry)
 	ext4_xattr_set(dentry->d_inode, EXT4_XATTR_INDEX_USER, "COW", &resetflag, 4, XATTR_CREATE);
 
 	// readpages from src and write to dest ->  and use readpages and write pages  
-	
+	ret_cowcopy_pages = cowcopy_pages(read_inode,*inode);
+	printk("cowcopy_pages return value: %d \n", ret_cowcopy_pages);
 
-
-	
 	return ret;
 }
 
