@@ -14,7 +14,7 @@ int main(int argv, char **argc)
   if (option == 1)
   {
   	ret =syscall(378, "/data/local/tmp/a","/data/local/tmp/b");
-  	syscall(378, "/data/local/tmp/a","/data/local/tmp/c");
+  	//syscall(378, "/data/local/tmp/a","/data/local/tmp/c");
   	//syscall(378, "/data/local/tmp/a","/data/local/tmp/d");
   	printf("COWCOPY return value :  %d\n", ret );
   }
@@ -25,9 +25,6 @@ int main(int argv, char **argc)
   	  close(fd);
   	  printf("file descriptor :  %d\n", fd );	
   }
-  //ret =syscall(378, "/data/local/tmp/a","/data/local/tmp/b");
-  //syscall(378, "/data/local/tmp/a","/data/local/tmp/c");
-  //syscall(378, "/data/local/tmp/a","/data/local/tmp/d");
-  //printf("return value :  %d\n", ret );
+  
   return 0;
 }
