@@ -1016,7 +1016,6 @@ int cowcopy_pages(struct inode *read_inode, struct inode *write_inode)
 	//spin_lock(&write_inode->i_lock);
 	mutex_unlock(&write_inode->i_mutex);
 	printk("Dirty page written? Return = %d\n", wpresult);
-	printk("for loop successfully executed \n");
 
 	return 0;
 }
@@ -1028,11 +1027,8 @@ int cowcopy(struct inode **inode, struct dentry *dentry)
 	int ret = -1 , ret_unlink = -1 , ret_cowcopy_pages = -1;
 	umode_t mode = 0644;
 
-	printk("file trying to be opened is a COWCOPY file\n");
 	// unlink from previous inode
-	printk("TG num of links before: %d\n", inode[0]->i_nlink );
-	ret_unlink= vfs_unlink(dentry->d_parent->d_inode , dentry);
-	printk("TG num of links after, should be one less: %d\n", inode[0]->i_nlink);
+	ret_unlink= vfs_unlink(dentry->d_parent->d_inode , dentry);\
 	printk("return for vfs_unlink:%d \n",ret_unlink);
 
 	dentry->d_inode = NULL;
@@ -1098,7 +1094,7 @@ long do_sys_open(int dfd, const char __user *filename, int flags, umode_t mode)
 						ret = ext4_xattr_get(inode, EXT4_XATTR_INDEX_USER, "COW", &cowcopyflag, 4);
 						if( ret > 0 && cowcopyflag ==1)
 						{
-							if( ((flags & O_RDWR) == 2) || ( (flags & O_WRONLY) == 1 ))
+							if( ((flags & O_RDWR) == O_RDWR) || ( (flags & O_WRONLY) == O_WRONLY ) || ((flags & O_APPEND) == O_APPEND) || ((flags & O_TRUNC) == O_TRUNC))
 							{
 								ret = cowcopy(&inode,cow_path.dentry);
 								printk("cowcopy return value  =  vfs_create value: %d \n", ret);
